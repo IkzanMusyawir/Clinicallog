@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: dependency_management
+title: Dual Package Manager System with Lockfile Enforcement
+scope: []
+source_files:
+    - composer.json
+    - composer.lock
+    - package.json
+    - package-lock.json
+    - .npmrc
+depends_on: []
+related_to: []

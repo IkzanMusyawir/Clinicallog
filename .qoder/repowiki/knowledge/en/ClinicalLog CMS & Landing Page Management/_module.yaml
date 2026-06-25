@@ -1,0 +1,234 @@
+schema_version: 1
+module_path: ""
+title: ClinicalLog CMS & Landing Page Management
+scope:
+    - README.md
+    - .gitignore
+    - .editorconfig
+    - .gitattributes
+    - .npmrc
+    - composer.json
+    - composer.lock
+    - package.json
+    - package-lock.json
+    - phpunit.xml
+    - postcss.config.js
+    - tailwind.config.js
+    - vite.config.js
+    - .env
+    - .env.example
+    - .qoder\repowiki\en\content\API Reference.md
+    - .qoder\repowiki\en\content\Appointment Management System\Admin Dashboard Management.md
+    - .qoder\repowiki\en\content\Appointment Management System\Appointment Data Model.md
+    - .qoder\repowiki\en\content\Appointment Management System\Appointment Management System.md
+    - .qoder\repowiki\en\content\Appointment Management System\Client Booking Workflow.md
+    - .qoder\repowiki\en\content\Appointment Management System\Status Tracking and Management.md
+    - .qoder\repowiki\en\content\Architecture Overview.md
+    - .qoder\repowiki\en\content\Authentication System\Authentication Security.md
+    - .qoder\repowiki\en\content\Authentication System\Authentication System.md
+    - .qoder\repowiki\en\content\Authentication System\Email Verification.md
+    - .qoder\repowiki\en\content\Authentication System\Password Management.md
+    - .qoder\repowiki\en\content\Authentication System\Profile Management.md
+    - .qoder\repowiki\en\content\Authentication System\User Registration and Login.md
+    - .qoder\repowiki\en\content\Configuration Management.md
+    - .qoder\repowiki\en\content\Database Schema Design.md
+    - .qoder\repowiki\en\content\Deployment Guide.md
+    - .qoder\repowiki\en\content\Development Guidelines.md
+    - .qoder\repowiki\en\content\Feature Management\Admin Interface Components.md
+    - .qoder\repowiki\en\content\Feature Management\Feature CRUD Operations.md
+    - .qoder\repowiki\en\content\Feature Management\Feature Management.md
+    - .qoder\repowiki\en\content\Feature Management\Icon Management System.md
+    - .qoder\repowiki\en\content\Feature Management\Sorting Algorithm Implementation.md
+    - .qoder\repowiki\en\content\Frontend Architecture\Asset Management and Build Process.md
+    - .qoder\repowiki\en\content\Frontend Architecture\Blade Templates.md
+    - .qoder\repowiki\en\content\Frontend Architecture\Frontend Architecture.md
+    - .qoder\repowiki\en\content\Frontend Architecture\JavaScript and Alpine.js.md
+    - .qoder\repowiki\en\content\Frontend Architecture\Tailwind CSS Framework.md
+    - .qoder\repowiki\en\content\Getting Started.md
+    - .qoder\repowiki\en\content\Landing Page Management\Google Drive Integration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Landing Page Management.md
+    - .qoder\repowiki\en\content\Landing Page Management\Landing Page Model.md
+    - .qoder\repowiki\en\content\Landing Page Management\Media Management.md
+    - .qoder\repowiki\en\content\Landing Page Management\Navigation Setup.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\About Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Call-to-Action Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Content Sections Configuration\Benefits Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Content Sections Configuration\Content Sections Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Content Sections Configuration\Pricing Plans Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Content Sections Configuration\Steps Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Content Sections Configuration\Testimonials Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Dashboard Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Google Drive Integration Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Hero Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Navigation and Links Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Section Configuration.md
+    - .qoder\repowiki\en\content\Landing Page Management\Section Configuration\Section Visibility Controls.md
+    - .qoder\repowiki\en\content\Project Overview.md
+    - .qoder\repowiki\en\content\Testing Strategy.md
+    - .qoder\repowiki\en\content\User Administration\Administrative User Management.md
+    - .qoder\repowiki\en\content\User Administration\Profile Management.md
+    - .qoder\repowiki\en\content\User Administration\User Administration.md
+    - .qoder\repowiki\en\meta\repowiki-metadata.json
+    - .qoder\repowiki\knowledge\en\ClinicalLog CMS & Landing Page Management\_module.yaml
+    - .qoder\repowiki\knowledge\en\ClinicalLog CMS & Landing Page Management\architecture_design.md
+    - .qoder\repowiki\knowledge\en\ClinicalLog CMS & Landing Page Management\coding_conventions.md
+    - .qoder\repowiki\knowledge\en\ClinicalLog CMS & Landing Page Management\overview.md
+    - .qoder\repowiki\knowledge\en\ClinicalLog CMS & Landing Page Management\tech_stack.md
+    - .qoder\repowiki\knowledge\en\ClinicalLog CMS & Landing Page Management\unique_setup_and_commands.md
+    - .qoder\repowiki\knowledge\en\ClinicalLog Frontend Styling System\_module.yaml
+    - .qoder\repowiki\knowledge\en\ClinicalLog Frontend Styling System\frontend_style.md
+    - .qoder\repowiki\knowledge\en\Dual Package Manager System with Lockfile Enforcement\_module.yaml
+    - .qoder\repowiki\knowledge\en\Dual Package Manager System with Lockfile Enforcement\dependency_management.md
+    - .qoder\repowiki\knowledge\en\Laravel Build System with Vite Asset Pipeline\_module.yaml
+    - .qoder\repowiki\knowledge\en\Laravel Build System with Vite Asset Pipeline\build_system.md
+    - .qoder\repowiki\knowledge\en\Laravel Configuration System\_module.yaml
+    - .qoder\repowiki\knowledge\en\Laravel Configuration System\configuration_system.md
+    - .qoder\repowiki\knowledge\en\Laravel Framework Error Handling Patterns\_module.yaml
+    - .qoder\repowiki\knowledge\en\Laravel Framework Error Handling Patterns\error_handling.md
+    - .qoder\repowiki\knowledge\en\Laravel Monolog Logging Configuration\_module.yaml
+    - .qoder\repowiki\knowledge\en\Laravel Monolog Logging Configuration\logging_system.md
+    - .qoder\repowiki\knowledge\en\_index.yaml
+    - app\Http\Controllers\AppointmentController.php
+    - app\Http\Controllers\Auth\AuthenticatedSessionController.php
+    - app\Http\Controllers\Auth\ConfirmablePasswordController.php
+    - app\Http\Controllers\Auth\EmailVerificationNotificationController.php
+    - app\Http\Controllers\Auth\EmailVerificationPromptController.php
+    - app\Http\Controllers\Auth\NewPasswordController.php
+    - app\Http\Controllers\Auth\PasswordController.php
+    - app\Http\Controllers\Auth\PasswordResetLinkController.php
+    - app\Http\Controllers\Auth\RegisteredUserController.php
+    - app\Http\Controllers\Auth\VerifyEmailController.php
+    - app\Http\Controllers\Controller.php
+    - app\Http\Controllers\FeatureController.php
+    - app\Http\Controllers\LandingPageController.php
+    - app\Http\Controllers\ProfileController.php
+    - app\Http\Requests\Auth\LoginRequest.php
+    - app\Http\Requests\ProfileUpdateRequest.php
+    - app\Models\Appointment.php
+    - app\Models\Feature.php
+    - app\Models\LandingPage.php
+    - app\Models\User.php
+    - app\Providers\AppServiceProvider.php
+    - app\View\Components\AppLayout.php
+    - app\View\Components\GuestLayout.php
+    - artisan
+    - bootstrap\app.php
+    - bootstrap\cache\.gitignore
+    - bootstrap\cache\packages.php
+    - bootstrap\cache\services.php
+    - bootstrap\providers.php
+    - config\app.php
+    - config\auth.php
+    - config\cache.php
+    - config\database.php
+    - config\filesystems.php
+    - config\logging.php
+    - config\mail.php
+    - config\queue.php
+    - config\services.php
+    - config\session.php
+    - database\.gitignore
+    - database\database.sqlite
+    - database\factories\UserFactory.php
+    - database\migrations\0001_01_01_000000_create_users_table.php
+    - database\migrations\0001_01_01_000001_create_cache_table.php
+    - database\migrations\0001_01_01_000002_create_jobs_table.php
+    - database\migrations\2026_06_17_031941_create_landing_pages_table.php
+    - database\migrations\2026_06_17_060200_create_features_table.php
+    - database\migrations\2026_06_17_073934_add_icon_and_sort_to_features_table.php
+    - database\migrations\2026_06_18_023000_add_images_to_landing_pages_table.php
+    - database\migrations\2026_06_18_035802_add_dashboard_and_navbar_to_landing_pages_table.php
+    - database\migrations\2026_06_18_040000_add_all_sections_to_landing_pages_table.php
+    - database\migrations\2026_06_18_060800_add_icon_name_to_features_table.php
+    - database\migrations\2026_06_18_064300_add_testimonials_visible_to_landing_pages.php
+    - database\migrations\2026_06_22_022549_add_section_visibility_to_landing_pages.php
+    - database\migrations\2026_06_22_024652_create_appointments_table.php
+    - database\migrations\2026_06_22_031700_add_gdrive_links_to_landing_pages.php
+    - database\seeders\DatabaseSeeder.php
+    - public\.htaccess
+    - public\assets\logo.png
+    - public\css\clinicallog.css
+    - public\favicon.ico
+    - public\index.php
+    - public\robots.txt
+    - resources\css\app.css
+    - resources\css\clinicallog.css
+    - resources\js\app.js
+    - resources\views\admin\appointments\index.blade.php
+    - resources\views\admin\dashboard.blade.php
+    - resources\views\admin\features\form.blade.php
+    - resources\views\admin\features\index.blade.php
+    - resources\views\admin\landingpage.blade.php
+    - resources\views\admin\users\index.blade.php
+    - resources\views\auth\confirm-password.blade.php
+    - resources\views\auth\forgot-password.blade.php
+    - resources\views\auth\login.blade.php
+    - resources\views\auth\register.blade.php
+    - resources\views\auth\reset-password.blade.php
+    - resources\views\auth\verify-email.blade.php
+    - resources\views\components\application-logo.blade.php
+    - resources\views\components\auth-session-status.blade.php
+    - resources\views\components\danger-button.blade.php
+    - resources\views\components\dropdown-link.blade.php
+    - resources\views\components\dropdown.blade.php
+    - resources\views\components\input-error.blade.php
+    - resources\views\components\input-label.blade.php
+    - resources\views\components\modal.blade.php
+    - resources\views\components\nav-link.blade.php
+    - resources\views\components\primary-button.blade.php
+    - resources\views\components\responsive-nav-link.blade.php
+    - resources\views\components\secondary-button.blade.php
+    - resources\views\components\text-input.blade.php
+    - resources\views\dashboard.blade.php
+    - resources\views\landing.blade.php
+    - resources\views\layouts\admin.blade.php
+    - resources\views\layouts\app.blade.php
+    - resources\views\layouts\guest.blade.php
+    - resources\views\layouts\navigation.blade.php
+    - resources\views\profile\edit.blade.php
+    - resources\views\profile\partials\delete-user-form.blade.php
+    - resources\views\profile\partials\update-password-form.blade.php
+    - resources\views\profile\partials\update-profile-information-form.blade.php
+    - resources\views\terms.blade.php
+    - resources\views\welcome.blade.php
+    - routes\auth.php
+    - routes\console.php
+    - routes\web.php
+    - scratch\replace_reveal.php
+    - storage\app\.gitignore
+    - storage\app\private\.gitignore
+    - storage\app\public\.gitignore
+    - storage\app\public\features\94QofAKG8f8LkPJcmk5Wp8jl6945SAZncGMSs8cw.png
+    - storage\app\public\features\z1PzekZ78zUmizH1dLLpriOJzGiB34sPVwqtndU4.png
+    - storage\framework\.gitignore
+    - storage\framework\cache\.gitignore
+    - storage\framework\cache\data\.gitignore
+    - storage\framework\sessions\.gitignore
+    - storage\framework\testing\.gitignore
+    - storage\framework\views\.gitignore
+    - storage\framework\views\09e2945b0822255da339490b163b8f43.php
+    - storage\framework\views\0eecf6cea997a15d334511cffa8145ee.php
+    - storage\framework\views\113b29fa394329d5fe871033c8a48294.php
+    - storage\framework\views\29dc10127a8583704bf62fe27a1a127a.php
+    - storage\framework\views\33bd6924ee78fc1ed6b0c0d95b0aef69.php
+    - storage\framework\views\6cf929037b1d7ef50de68beb092bba46.php
+    - storage\framework\views\74262f79a7177bdec4ca780f8f5ef06e.php
+    - storage\framework\views\746fae76a277ac5c7e2ae97a380645fd.php
+    - storage\framework\views\8f06c273ad6922944aa0a8abb2b1c8f1.php
+    - storage\framework\views\abdb9415e56e4176ea898a0231240169.php
+    - storage\framework\views\ce23125e129803f35bb479493ccbae80.php
+    - storage\logs\.gitignore
+    - storage\logs\laravel.log
+    - tests\Feature\Auth\AuthenticationTest.php
+    - tests\Feature\Auth\EmailVerificationTest.php
+    - tests\Feature\Auth\PasswordConfirmationTest.php
+    - tests\Feature\Auth\PasswordResetTest.php
+    - tests\Feature\Auth\PasswordUpdateTest.php
+    - tests\Feature\Auth\RegistrationTest.php
+    - tests\Feature\ExampleTest.php
+    - tests\Feature\ProfileTest.php
+    - tests\TestCase.php
+    - tests\Unit\ExampleTest.php
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,4 @@
+- Controllers use explicit validation rules in `store` and `update` methods before interacting with models.
+- File uploads (icons, images) are handled via Laravel's Storage facade with automatic cleanup of old files on update or delete.
+- Admin routes are grouped under the `auth` and `verified` middleware to ensure secure access.
+- JSON data structures (like navbar links or pricing plans) are processed in controllers before being saved to casted array attributes in models.

@@ -1,0 +1,6 @@
+- **Framework**: Built on Laravel 13 using the Breeze starter kit for authentication scaffolding.
+- **Routing**: Centralized in `routes/web.php`, separating public routes (landing page, appointment submission) from authenticated admin routes (dashboard, CMS CRUD).
+- **Controllers**: Standard Laravel controllers (`LandingPageController`, `FeatureController`, `AppointmentController`) handle business logic, including file uploads to local storage and complex sorting algorithms for features.
+- **Models**: Eloquent models (`LandingPage`, `Feature`, `Appointment`) use JSON casting for flexible content sections (e.g., pricing plans, testimonials) and fillable attributes for mass assignment.
+- **Views**: Blade templates organized into `admin` and `public` layouts, utilizing Alpine.js for interactive UI components and Tailwind CSS for styling.
+- **Assets**: Managed via Vite, compiling `resources/css/app.css` and `resources/js/app.js`.
