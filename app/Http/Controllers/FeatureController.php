@@ -51,6 +51,13 @@ class FeatureController extends Controller
             'sort_order' => $newPosition,
         ]);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Feature berhasil ditambahkan',
+            ]);
+        }
+
         return redirect()->route('admin.landing.edit')->with('success', 'Feature berhasil ditambahkan');
     }
 
@@ -128,27 +135,39 @@ class FeatureController extends Controller
             'sort_order' => $newPosition,
         ]);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Feature berhasil diupdate',
+            ]);
+        }
+
         return redirect()->route('admin.landing.edit')->with('success', 'Feature berhasil diupdate');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $feature = Feature::findOrFail($id);
         $deletedPosition = $feature->sort_order;
 
-        // Clean up uploaded icon file if exists
         if ($feature->icon) {
             Storage::disk('public')->delete($feature->icon);
         }
 
         $feature->delete();
 
-        // Shift features after deleted position up by 1
         Feature::where('sort_order', '>', $deletedPosition)
             ->orderBy('sort_order', 'asc')
             ->each(function ($f) {
                 $f->update(['sort_order' => $f->sort_order - 1]);
             });
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Feature berhasil dihapus',
+            ]);
+        }
 
         return redirect()->route('admin.landing.edit')->with('success', 'Feature berhasil dihapus');
     }

@@ -413,18 +413,6 @@
                 <p class="section-subtitle" style="margin:0 auto;">Dipercaya oleh tenaga pendidik dan mahasiswa untuk
                     menciptakan proses pembelajaran klinis yang lebih efektif.</p>
             </div>
-
-            <div class="flex justify-center" style="margin-bottom:36px;">
-                <div class="testi-toggle">
-                    <button class="testi-toggle-btn active" id="showBtn" onclick="showTestimonials()">
-                        <i data-lucide="eye" style="width:14px;height:14px;"></i> Tampilkan
-                    </button>
-                    <button class="testi-toggle-btn" id="hideBtn" onclick="hideTestimonials()">
-                        <i data-lucide="eye-off" style="width:14px;height:14px;"></i> Sembunyikan
-                    </button>
-                </div>
-            </div>
-
             <div class="testi-grid" id="testimonialCards">
                 @php
                     $testiData = $landing && $landing->testimonials ? $landing->testimonials : [
@@ -525,6 +513,7 @@
                             'tier' => 'Starter',
                             'name' => 'Department',
                             'price' => 'Rp25 Juta',
+                            'desc' => 'Cocok untuk administrasi logbook klinis di tingkat spesialis/departemen.',
                             'featured' => false,
                             'features' => ['Maks 100 mahasiswa', 'Maks 5 dosen', 'Dashboard basic', 'Support email'],
                         ],
@@ -532,6 +521,7 @@
                             'tier' => 'Populer',
                             'name' => 'Faculty',
                             'price' => 'Rp50 Juta',
+                            'desc' => 'Solusi lengkap integrasi prodi profesi di tingkat fakultas kedokteran.',
                             'featured' => true,
                             'features' => [
                                 'Unlimited mahasiswa',
@@ -545,6 +535,7 @@
                             'tier' => 'Enterprise',
                             'name' => 'University',
                             'price' => 'Rp75 Juta',
+                            'desc' => 'Skala penuh untuk tata kelola pendidikan kedokteran lintas fakultas secara terpusat.',
                             'featured' => false,
                             'features' => [
                                 'Multi-fakultas',
@@ -557,24 +548,42 @@
                     ];
                 @endphp
                 @foreach ($plansData as $index => $plan)
-                    <div class="pricing-card glass {{ $plan['featured'] ? 'featured' : '' }}" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}"
+                    <div class="pricing-card {{ $plan['featured'] ? 'featured' : '' }}" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}"
                         onclick="this.classList.toggle('selected')">
                         @if ($plan['featured'])
-                            <div class="pricing-badge">⭐ Paling Populer</div>
+                            <div class="pricing-badge">
+                                <i data-lucide="sparkles" style="width:12px;height:12px;margin-right:5px;"></i>Paling Populer
+                            </div>
                         @endif
-                        <div class="pricing-tier">{{ $plan['tier'] }}</div>
+
+                        @if(!empty($plan['price']))
+                            <div class="pricing-price">{{ $plan['price'] }}<span class="currency">/tahun</span></div>
+                        @else
+                            <div class="pricing-price" style="font-size:28px;">Hubungi Kami</div>
+                        @endif
+
                         <div class="pricing-name">{{ $plan['name'] }}</div>
-                        <div class="pricing-divider"></div>
-                                                @if(!empty($plan['price']))
-                                                    <div class="pricing-price gradient-text">{{ $plan['price'] }}<span class="currency">/tahun</span></div>
-                                                    <div class="pricing-period">Tagihan per tahun &middot; Batal kapan saja</div>
-                                                @else
-                                                    <div class="pricing-price" style="font-size:26px;color:var(--blue);">Hubungi Kami</div>
-                                                    <div class="pricing-period">Harga disesuaikan kebutuhan Anda</div>
-                                                @endif
+                        @php
+                            $defaultDesc = 'Solusi digital terintegrasi untuk institusi Anda.';
+                            $planName = strtolower($plan['name'] ?? '');
+                            if ($planName === 'department') {
+                                $defaultDesc = 'Cocok untuk administrasi logbook klinis di tingkat spesialis/departemen.';
+                            } elseif ($planName === 'faculty') {
+                                $defaultDesc = 'Solusi lengkap integrasi prodi profesi di tingkat fakultas kedokteran.';
+                            } elseif ($planName === 'university') {
+                                $defaultDesc = 'Skala penuh untuk tata kelola pendidikan kedokteran lintas fakultas secara terpusat.';
+                            }
+                        @endphp
+                        <p class="pricing-desc">{{ $plan['desc'] ?? $defaultDesc }}</p>
+
                         <ul class="pricing-list">
                             @foreach ($plan['features'] as $feat)
-                                <li><span class="check">✓</span> {{ $feat }}</li>
+                                <li style="display:flex;align-items:center;gap:10px;">
+                                    <span class="check">
+                                        <i data-lucide="check" style="width:10px;height:10px;"></i>
+                                    </span> 
+                                    {{ $feat }}
+                                </li>
                             @endforeach
                         </ul>
                         <a href="#kontak" class="{{ $plan['featured'] ? 'btn-primary' : 'btn-secondary' }}"
@@ -592,46 +601,76 @@
 
 @push('scripts')
     <script>
-        // Testimonials toggle
-        function showTestimonials() {
-            document.getElementById('testimonialCards').classList.remove('hide');
-            document.getElementById('showBtn').classList.add('active');
-            document.getElementById('hideBtn').classList.remove('active');
-        }
 
-        function hideTestimonials() {
-            document.getElementById('testimonialCards').classList.add('hide');
-            document.getElementById('hideBtn').classList.add('active');
-            document.getElementById('showBtn').classList.remove('active');
-        }
 
-        // Counter 0 → 100%
-        let pct = 0;
-        const counterEl = document.getElementById('statPaperless');
-        if (counterEl) {
-            const iv = setInterval(() => {
-                pct++;
-                counterEl.textContent = pct + '%';
-                if (pct >= 100) clearInterval(iv);
-            }, 18);
-        }
+        // Dynamic stats animation (Counter & Typing Effects) triggered by Intersection Observer
+        let counterInterval = null;
+        let activeTypingTimers = {};
 
-        // Typing effect
-        function typeText(id, text, speed = 110) {
+        function typeText(id, text, speed, delay = 0) {
             const el = document.getElementById(id);
             if (!el) return;
-            let i = 0;
-            const go = () => {
-                if (i < text.length) {
-                    el.textContent += text[i++];
-                    setTimeout(go, speed);
-                }
-            };
-            go();
+            
+            if (activeTypingTimers[id]) {
+                clearTimeout(activeTypingTimers[id]);
+            }
+
+            el.textContent = '';
+
+            activeTypingTimers[id] = setTimeout(() => {
+                let i = 0;
+                const go = () => {
+                    if (i < text.length) {
+                        el.textContent += text[i++];
+                        activeTypingTimers[id] = setTimeout(go, speed);
+                    }
+                };
+                go();
+            }, delay);
         }
-        window.addEventListener('load', () => {
-            setTimeout(() => typeText('statRealtime', 'Real-time'), 500);
-            setTimeout(() => typeText('statMulti', 'Multi Platform'), 1800);
-        });
-    </script>
+
+        function resetHeroAnimations() {
+            clearInterval(counterInterval);
+            for (const id in activeTypingTimers) {
+                clearTimeout(activeTypingTimers[id]);
+            }
+            const counterEl = document.getElementById('statPaperless');
+            const realTimeEl = document.getElementById('statRealtime');
+            const multiEl = document.getElementById('statMulti');
+            if (counterEl) counterEl.textContent = '0%';
+            if (realTimeEl) realTimeEl.textContent = '';
+            if (multiEl) multiEl.textContent = '';
+        }
+
+        const heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    resetHeroAnimations();
+
+                    // Start Counter: 0% -> 100%
+                    let pct = 0;
+                    const counterEl = document.getElementById('statPaperless');
+                    if (counterEl) {
+                        counterInterval = setInterval(() => {
+                            pct++;
+                            counterEl.textContent = pct + '%';
+                            if (pct >= 100) clearInterval(counterInterval);
+                        }, 12);
+                    }
+
+                    // Start Typing Animations
+                    typeText('statRealtime', 'Real-time', 80, 300);
+                    typeText('statMulti', 'Multi Platform', 80, 1200);
+                } else {
+                    resetHeroAnimations();
+                }
+            });
+        }, { threshold: 0.15 });
+
+        const berandaSec = document.getElementById('beranda');
+        if (berandaSec) {
+            heroObserver.observe(berandaSec);
+        }
+
+</script>
 @endpush
