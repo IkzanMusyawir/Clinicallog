@@ -217,6 +217,13 @@ class LandingPageController extends Controller
             $landing->update($data);
         }
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Landing Page berhasil diperbarui!',
+            ]);
+        }
+
         return redirect()
             ->back()
             ->with('success', 'Landing Page berhasil diperbarui!');

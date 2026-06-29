@@ -485,7 +485,7 @@
                                                     <i data-lucide="edit-2" style="width:13px;height:13px;"></i>
                                                 </a>
                                                 <button type="button" class="btn-icon danger" title="Hapus"
-                                                    onclick="if(confirm('Hapus fitur ini?')) { const f = document.getElementById('delete-feature-form'); f.action = '{{ route('admin.features.destroy', $feature->id) }}'; f.submit(); }">
+                                                    onclick="deleteFeature('{{ route('admin.features.destroy', $feature->id) }}', this)">
                                                     <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
                                                 </button>
                                             </div>
@@ -1440,6 +1440,31 @@
         }
         function updateCtaToggle(isChecked) {
             updateToggleGeneric('cta', isChecked, 'Seksi CTA Aktif', 'Seksi CTA Nonaktif', 'Seksi CTA ditampilkan di landing page.', 'Seksi CTA disembunyikan dari landing page.');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var cmsForm = document.querySelector('form[action="{{ route('admin.landing.update') }}"]');
+            if (cmsForm) {
+                cmsForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    ajaxSubmit(cmsForm);
+                });
+            }
+        });
+
+        function deleteFeature(url, btn) {
+            if (!confirm('Hapus fitur ini?')) return;
+            var featureRow = btn.closest('tr');
+            ajaxAction(url, 'DELETE', {}, {
+                onSuccess: function() {
+                    if (featureRow) {
+                        featureRow.style.transition = 'opacity .3s, transform .3s';
+                        featureRow.style.opacity = '0';
+                        featureRow.style.transform = 'translateX(-20px)';
+                        setTimeout(function() { featureRow.remove(); }, 300);
+                    }
+                }
+            });
         }
     </script>
 @endpush

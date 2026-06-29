@@ -293,5 +293,36 @@
                 iconInput.dispatchEvent(new Event('change'));
             }
         });
+
+        var featureForm = document.querySelector('form[action*="admin/features"]');
+        if (featureForm) {
+            featureForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                ajaxSubmit(featureForm, {
+                    onSuccess: function() {
+                        setTimeout(function() {
+                            window.location.href = '{{ route('admin.landing.edit') }}';
+                        }, 800);
+                    }
+                });
+            });
+        }
+
+        @if(isset($feature))
+        var deleteFeatureForm = document.querySelector('form[action="{{ route('admin.features.destroy', $feature->id) }}"]');
+        if (deleteFeatureForm) {
+            deleteFeatureForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!confirm('Yakin ingin menghapus fitur ini?')) return;
+                ajaxAction('{{ route('admin.features.destroy', $feature->id) }}', 'DELETE', {}, {
+                    onSuccess: function() {
+                        setTimeout(function() {
+                            window.location.href = '{{ route('admin.landing.edit') }}';
+                        }, 800);
+                    }
+                });
+            });
+        }
+        @endif
     </script>
 @endpush

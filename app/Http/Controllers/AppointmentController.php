@@ -62,15 +62,31 @@ class AppointmentController extends Controller
             'status' => $request->status,
         ]);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status appointment berhasil diperbarui!',
+                'status' => $appointment->status,
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Status appointment berhasil diperbarui!');
     }
 
     /**
      * Remove the specified appointment from storage.
      */
-    public function destroy(Appointment $appointment)
+    public function destroy(Request $request, Appointment $appointment)
     {
         $appointment->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Appointment berhasil dihapus!',
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Appointment berhasil dihapus!');
     }
 }
