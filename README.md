@@ -1,58 +1,201 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏥 Clinicallog CMS
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-13.16.1-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" />
+  <img src="https://img.shields.io/badge/PHP-8.4.13-777BB4?style=for-the-badge&logo=php&logoColor=white" />
+  <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vite-Build_Tool-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
 </p>
 
-## About Laravel
+<p align="center">
+  <strong>Clinicallog CMS</strong> merupakan sistem manajemen website klinik (Content Management System) berbasis <strong>Laravel 13</strong> yang dikembangkan sebagai proyek mata kuliah <strong>Proyek Informatika</strong>.
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 📖 Deskripsi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Clinicallog CMS merupakan aplikasi berbasis web yang dirancang untuk membantu pengelolaan website klinik melalui dashboard admin yang mudah digunakan.
 
-## Learning Laravel
+Website ini menyediakan Landing Page modern untuk pengunjung sekaligus Content Management System (CMS) yang memungkinkan administrator mengelola berbagai informasi pada website secara efisien.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# ✨ Fitur
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+* 🏠 Landing Page Modern
+* 📅 Manajemen Appointment
+* ⚙️ Dashboard Administrator
+* ⭐ Manajemen Feature Website
+* 📱 Responsive Design
+* 🔐 Authentication Admin
+* ⚡ Fast Performance menggunakan Laravel 13
+* 🎨 UI Modern menggunakan Tailwind CSS
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+# 🛠️ Teknologi
 
-```bash
-composer require laravel/boost --dev
+| Teknologi    | Versi                |
+| ------------ | -------------------- |
+| Laravel      | 13.16.1              |
+| PHP          | 8.4.13               |
+| Composer     | 2.8.12               |
+| MySQL        | Database             |
+| Blade        | Template Engine      |
+| Tailwind CSS | Frontend UI          |
+| JavaScript   | Frontend Interaction |
+| Vite         | Asset Bundler        |
 
-php artisan boost:install
+---
+
+# 📂 Struktur Project
+
+```text
+app/
+bootstrap/
+config/
+database/
+public/
+resources/
+routes/
+storage/
+tests/
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+# 🚀 Instalasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 1. Clone Repository
 
-## Code of Conduct
+```bash
+git clone https://github.com/IkzanMusyawir/Clinicallog.git
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 2. Masuk ke Folder Project
 
-## Security Vulnerabilities
+```bash
+cd Clinicallog
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 3. Install Dependency
 
-## License
+```bash
+composer install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+npm install
+```
+
+## 4. Salin File Environment
+
+Windows
+
+```bash
+copy .env.example .env
+```
+
+Linux / Mac
+
+```bash
+cp .env.example .env
+```
+
+## 5. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+## 6. Konfigurasi Database
+
+Edit file `.env`
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=clinicallog
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Sesuaikan dengan database yang digunakan.
+
+## 7. Jalankan Migrasi
+
+```bash
+php artisan migrate
+```
+
+Jika project menggunakan seeder
+
+```bash
+php artisan db:seed
+```
+
+atau
+
+```bash
+php artisan migrate --seed
+```
+
+## 8. Jalankan Aplikasi
+
+Terminal pertama
+
+```bash
+php artisan serve
+```
+
+Terminal kedua
+
+```bash
+npm run dev
+```
+
+Aplikasi dapat diakses melalui
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+
+
+# ⚙️ Environment
+
+| Item     | Nilai        |
+| -------- | ------------ |
+| Laravel  | 13.16.1      |
+| PHP      | 8.4.13       |
+| Composer | 2.8.12       |
+| Database | MySQL        |
+| Timezone | Asia/Jakarta |
+| Locale   | id           |
+
+---
+
+# 👨‍💻 Developer
+
+**Ikzan Musyawir**
+
+Program Studi Teknik Informatika dan Komputer
+
+Universitas Negeri Makassar
+
+---
+
+# 📄 Lisensi
+
+Project ini dikembangkan untuk keperluan pembelajaran dan penyelesaian tugas mata kuliah **Proyek Informatika**.
+
+Repository ini dapat digunakan sebagai referensi pembelajaran dengan tetap menghormati hak cipta pengembang.
+
+---
+
+⭐ **Terima kasih telah mengunjungi repository ini.**
