@@ -1,1 +1,0 @@
-A Laravel-based content management system for managing landing page content, feature listings, and appointment bookings with an admin dashboard.
