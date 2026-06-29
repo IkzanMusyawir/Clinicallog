@@ -1,3 +1,0 @@
-- **Backend**: Laravel 13, PHP 8.3+, SQLite (default), Laravel Breeze for auth.
-- **Frontend**: Vite 8, Tailwind CSS 3, Alpine.js 3, PostCSS.
-- **Build Tools**: Composer for PHP dependencies, NPM for JS/CSS assets.

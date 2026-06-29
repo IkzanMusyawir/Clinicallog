@@ -1,3 +1,0 @@
-- **Setup**: Run `composer setup` to install dependencies, generate keys, migrate the database, and build assets.
-- **Development**: Use `composer dev` to concurrently start the server, queue listener, log tailer, and Vite dev server.
-- **Testing**: Execute `composer test` to run PHPUnit tests.
