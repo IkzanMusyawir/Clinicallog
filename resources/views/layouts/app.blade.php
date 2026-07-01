@@ -15,6 +15,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/clinicallog.css') }}">
 
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+
     @stack('head')
 </head>
 
@@ -86,7 +88,7 @@
         <div class="navbar-inner">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="navbar-logo">
-                <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="44">
+                <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="64">
             </a>
 
             {{-- Desktop nav --}}
@@ -135,7 +137,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="44">
+                    <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="64">
                     <p class="footer-brand-desc">Platform Medical Data &amp; E-Logbook untuk mendukung pendidikan klinis
                         yang lebih digital, terukur, dan terintegrasi.</p>
                 </div>

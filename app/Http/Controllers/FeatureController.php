@@ -58,7 +58,7 @@ class FeatureController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.landing.edit')->with('success', 'Feature berhasil ditambahkan');
+        return redirect()->to(route('admin.landing.edit') . '#features')->with('success', 'Feature berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -142,7 +142,7 @@ class FeatureController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.landing.edit')->with('success', 'Feature berhasil diupdate');
+        return redirect()->to(route('admin.landing.edit') . '#features')->with('success', 'Feature berhasil diupdate');
     }
 
     public function destroy(Request $request, $id)
@@ -169,6 +169,6 @@ class FeatureController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.landing.edit')->with('success', 'Feature berhasil dihapus');
+        return redirect()->to(route('admin.landing.edit') . '#features')->with('success', 'Feature berhasil dihapus');
     }
 }

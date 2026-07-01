@@ -14,6 +14,8 @@
     {{-- Styles --}}
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=3">
 
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+
     @stack('head')
 
 <style>
@@ -75,6 +77,93 @@
     transition: opacity .2s;
 }
 .toast .toast-close:hover { opacity: 1; }
+
+/* ── Swup Page Transitions — iOS-style ── */
+.transition-fade {
+    transition: opacity .35s cubic-bezier(.22,1,.36,1),
+                transform .35s cubic-bezier(.22,1,.36,1);
+    will-change: opacity, transform;
+}
+html.is-animating .transition-fade {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+/* ── Sidebar Accordion — iOS-smooth ── */
+.adm-nav-dropdown-wrapper { margin-bottom: 2px; }
+
+/* Chevron */
+.adm-nav-chevron {
+    width: 16px; height: 16px;
+    transition: transform .25s cubic-bezier(.22,1,.36,1);
+    flex-shrink: 0;
+    opacity: .4;
+    will-change: transform;
+}
+.adm-nav-dropdown-wrapper.open > a > .adm-nav-chevron {
+    transform: rotate(180deg);
+    opacity: .8;
+}
+
+/* Sub-menu container — max-height + transform + opacity */
+.adm-nav-sub {
+    max-height: 0;
+    overflow: hidden;
+    transform: translateY(-6px);
+    opacity: 0;
+    padding: 0 0 0 16px;
+    margin-left: 12px;
+    border-left: 1.5px solid var(--aborder, #e2e8f0);
+
+    transition: max-height .28s cubic-bezier(.22,1,.36,1),
+                opacity .22s ease-out,
+                transform .28s cubic-bezier(.22,1,.36,1);
+    will-change: max-height, opacity, transform;
+}
+.adm-nav-dropdown-wrapper.open .adm-nav-sub {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+    padding: 2px 0 4px 16px;
+}
+
+/* Sub-items */
+.adm-nav-sub-item {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: var(--atext2, #475569);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-bottom: 1px;
+    position: relative;
+    transform: translateZ(0);
+    transition: background-color .18s ease,
+                color .18s ease,
+                transform .18s ease;
+}
+.adm-nav-sub-item:hover {
+    background: var(--ablue-lt, #eff6ff);
+    color: var(--ablue, #2563eb);
+    transform: translateX(3px);
+}
+.adm-nav-sub-item.active {
+    background: var(--ablue-lt, #eff6ff);
+    color: var(--ablue, #2563eb);
+    font-weight: 600;
+}
+.adm-nav-sub-item.active::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    background: var(--ablue, #2563eb);
+    border-radius: 3px;
+}
 </style>
 </head>
 
@@ -105,11 +194,25 @@
                 <span class="adm-nav-label">Dashboard</span>
             </a>
 
-            <a href="{{ route('admin.landing.edit') }}"
-               class="adm-nav-item {{ request()->routeIs('admin.landing.*') ? 'active' : '' }}">
-                <span class="adm-nav-icon"><i data-lucide="file-text"></i></span>
-                <span class="adm-nav-label">Landing Page</span>
-            </a>
+            <div class="adm-nav-dropdown-wrapper {{ request()->routeIs('admin.landing.*') ? 'open' : '' }}">
+                <a href="#" class="adm-nav-item {{ request()->routeIs('admin.landing.*') ? 'active' : '' }}" onclick="toggleLandingDropdown(event)">
+                    <span class="adm-nav-icon"><i data-lucide="file-text"></i></span>
+                    <span class="adm-nav-label">Landing Page</span>
+                    <i data-lucide="chevron-down" class="adm-nav-chevron"></i>
+                </a>
+                <div class="adm-nav-sub" id="landingSubNav">
+                    <a href="#" class="adm-nav-sub-item" data-section="hero" onclick="event.preventDefault(); goToLandingSection('hero'); return false;">Hero</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="navigation" onclick="event.preventDefault(); goToLandingSection('navigation'); return false;">Navigasi</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="about" onclick="event.preventDefault(); goToLandingSection('about'); return false;">Tentang</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="features" onclick="event.preventDefault(); goToLandingSection('features'); return false;">Fitur</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="benefits" onclick="event.preventDefault(); goToLandingSection('benefits'); return false;">Keunggulan</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="dashboard_tab" onclick="event.preventDefault(); goToLandingSection('dashboard_tab'); return false;">Dashboard</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="steps" onclick="event.preventDefault(); goToLandingSection('steps'); return false;">Cara Kerja</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="testimonials" onclick="event.preventDefault(); goToLandingSection('testimonials'); return false;">Testimoni</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="pricing" onclick="event.preventDefault(); goToLandingSection('pricing'); return false;">Harga</a>
+                    <a href="#" class="adm-nav-sub-item" data-section="cta" onclick="event.preventDefault(); goToLandingSection('cta'); return false;">CTA</a>
+                </div>
+            </div>
 
             <a href="{{ route('admin.appointments.index') }}"
                class="adm-nav-item {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}">
@@ -196,8 +299,8 @@
             </div>
         @endif
 
-        {{-- Content --}}
-        <div class="adm-content">
+        {{-- Content (Swup container for page transitions) --}}
+        <div id="swup" class="adm-content transition-fade">
             @yield('content')
         </div>
 
@@ -289,6 +392,56 @@
         document.getElementById('admLayout').classList.remove('sidebar-open');
         document.getElementById('admOverlay').classList.remove('active');
     }
+
+    // ─── Landing Page sidebar dropdown ───
+    function toggleLandingDropdown(e) {
+        e.preventDefault();
+        var wrapper = e.currentTarget.closest('.adm-nav-dropdown-wrapper');
+        wrapper.classList.toggle('open');
+        // Refresh Lucide icons if the chevron wasn't rendered
+        if (window.lucide) setTimeout(function() { lucide.createIcons(); }, 0);
+    }
+
+    // ─── Navigate landing page section with smooth scroll ───
+    function goToLandingSection(sectionId) {
+        if (window.location.href.indexOf('admin/landing-page') === -1) {
+            window.location.href = '{{ route('admin.landing.edit') }}#' + sectionId;
+            return;
+        }
+
+        // update active class in sidebar
+        document.querySelectorAll('.adm-nav-sub-item').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        var activeItem = document.querySelector('.adm-nav-sub-item[data-section="' + sectionId + '"]');
+        if (activeItem) activeItem.classList.add('active');
+
+        // show the panel via switchTab (btn-less since tabs removed)
+        if (typeof switchTab === 'function') {
+            switchTab(sectionId);
+        }
+
+        // smooth scroll to panel
+        setTimeout(function() {
+            var panel = document.getElementById('panel-' + sectionId);
+            if (panel) {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+
+    // Auto-open sidebar dropdown + set active subitem from hash
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.location.href.indexOf('admin/landing') > -1) {
+            var wrapper = document.querySelector('.adm-nav-dropdown-wrapper');
+            if (wrapper) wrapper.classList.add('open');
+            var hash = window.location.hash.slice(1);
+            if (hash) {
+                var activeItem = document.querySelector('.adm-nav-sub-item[data-section="' + hash + '"]');
+                if (activeItem) activeItem.classList.add('active');
+            }
+        }
+    });
 
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -415,5 +568,8 @@
 </style>
 
 @stack('scripts')
+
+{{-- Vite for Swup & Alpine --}}
+@vite(['resources/js/app.js'])
 </body>
 </html>

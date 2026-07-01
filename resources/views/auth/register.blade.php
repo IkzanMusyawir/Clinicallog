@@ -23,7 +23,7 @@
 
         {{-- Logo --}}
         <div style="text-align:center;margin-bottom:32px;">
-            <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="52" style="margin:0 auto 16px;">
+            <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="64" style="margin:0 auto 16px;">
             <h1 style="font-size:22px;font-weight:800;color:#f0f6ff;letter-spacing:-.02em;">Daftar Akun Baru</h1>
             <p style="font-size:14px;color:#64748b;margin-top:6px;">Platform Medical Data & E-Logbook</p>
         </div>

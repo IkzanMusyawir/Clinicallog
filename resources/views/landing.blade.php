@@ -447,7 +447,8 @@
                         <div class="testi-stars">★★★★★</div>
                         <p class="testi-quote">"{{ $t['quote'] }}"</p>
                         <div class="testi-author">
-                            <img class="testi-author-img" src="{{ $t['img'] }}" alt="{{ $t['name'] }}"
+                            @php $imgSrc = !empty($t['img']) && !str_starts_with($t['img'], 'http') ? Storage::url($t['img']) : ($t['img'] ?? ''); @endphp
+                            <img class="testi-author-img" src="{{ $imgSrc }}" alt="{{ $t['name'] }}"
                                 loading="lazy">
                             <div>
                                 <div class="testi-author-name">{{ $t['name'] }}</div>

@@ -44,6 +44,7 @@ class LandingPageController extends Controller
             'cta_visible'           => 'nullable|boolean',
             'terms_gdrive_url'      => 'nullable|string|max:2000',
             'privacy_gdrive_url'    => 'nullable|string|max:2000',
+            'testimonials.*.img_file' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $landing = LandingPage::first();
@@ -171,13 +172,37 @@ class LandingPageController extends Controller
             $testimonials = [];
             $testiData = $request->input('testimonials', []);
             if (is_array($testiData)) {
-                foreach ($testiData as $t) {
+                foreach ($testiData as $index => $t) {
+                    $img = $t['img'] ?? '';
+
+                    // Handle file upload
+                    $fileKey = "testimonials.{$index}.img_file";
+                    if ($request->hasFile($fileKey)) {
+                        if ($img && !str_starts_with($img, 'http')) {
+                            Storage::disk('public')->delete($img);
+                        }
+                        $img = $request->file($fileKey)->store('testimonials', 'public');
+                    }
+
+                    // Handle delete checkbox
+                    if (!empty($t['delete_img'])) {
+                        if ($img && !str_starts_with($img, 'http')) {
+                            Storage::disk('public')->delete($img);
+                        }
+                        $img = '';
+                    }
+
+                    // URL fallback
+                    if (!empty($t['img_url'])) {
+                        $img = $t['img_url'];
+                    }
+
                     if (!empty($t['name'])) {
                         $testimonials[] = [
                             'quote' => $t['quote'] ?? '',
                             'name'  => $t['name'],
                             'role'  => $t['role'] ?? '',
-                            'img'   => $t['img'] ?? '',
+                            'img'   => $img,
                         ];
                     }
                 }

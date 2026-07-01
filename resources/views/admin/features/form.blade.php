@@ -301,7 +301,7 @@
                 ajaxSubmit(featureForm, {
                     onSuccess: function() {
                         setTimeout(function() {
-                            window.location.href = '{{ route('admin.landing.edit') }}';
+                            window.location.href = '{{ route('admin.landing.edit') }}#features';
                         }, 800);
                     }
                 });
@@ -317,7 +317,7 @@
                 ajaxAction('{{ route('admin.features.destroy', $feature->id) }}', 'DELETE', {}, {
                     onSuccess: function() {
                         setTimeout(function() {
-                            window.location.href = '{{ route('admin.landing.edit') }}';
+                            window.location.href = '{{ route('admin.landing.edit') }}#features';
                         }, 800);
                     }
                 });

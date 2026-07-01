@@ -4,22 +4,15 @@
 
 @push('head')
 <style>
-    @keyframes tabFadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+    @keyframes panelFadeIn {
+        from { opacity: 0; transform: translateY(12px); }
         to   { opacity: 1; transform: translateY(0); }
     }
     .cms-panel-animate {
-        animation: tabFadeIn .28s cubic-bezier(.4,0,.2,1) both;
+        animation: panelFadeIn .3s cubic-bezier(.22,1,.36,1) both;
     }
-    .cms-tab {
-        transition: all .2s cubic-bezier(.4,0,.2,1);
-    }
-    .cms-tab:hover:not(.active) {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(37,99,235,.15);
-    }
-    .cms-tab.active {
-        transition: background .25s, color .25s, box-shadow .25s, transform .2s;
+    .cms-panel {
+        scroll-margin-top: 90px;
     }
 </style>
 @endpush
@@ -41,41 +34,7 @@
         @csrf
         @method('PUT')
 
-        {{-- ═══ Section Nav Tabs ═══ --}}
-        <div class="cms-tabs glass-card glass" style="padding:6px 12px;margin-bottom:20px;overflow:hidden;">
-            <div class="cms-tabs-container">
-                <button type="button" class="cms-tab active" onclick="switchTab('hero', this)">
-                    <i data-lucide="home" style="width:14px;height:14px;"></i> Hero
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('navigation', this)">
-                    <i data-lucide="navigation" style="width:14px;height:14px;"></i> Navigasi
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('about', this)">
-                    <i data-lucide="info" style="width:14px;height:14px;"></i> Tentang
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('features', this)">
-                    <i data-lucide="star" style="width:14px;height:14px;"></i> Fitur
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('benefits', this)">
-                    <i data-lucide="award" style="width:14px;height:14px;"></i> Keunggulan
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('dashboard_tab', this)">
-                    <i data-lucide="monitor" style="width:14px;height:14px;"></i> Dashboard
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('steps', this)">
-                    <i data-lucide="list-ordered" style="width:14px;height:14px;"></i> Cara Kerja
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('testimonials', this)">
-                    <i data-lucide="message-square" style="width:14px;height:14px;"></i> Testimoni
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('pricing', this)">
-                    <i data-lucide="credit-card" style="width:14px;height:14px;"></i> Harga
-                </button>
-                <button type="button" class="cms-tab" onclick="switchTab('cta', this)">
-                    <i data-lucide="megaphone" style="width:14px;height:14px;"></i> CTA
-                </button>
-            </div>
-        </div>
+        {{-- Section navigation handled by sidebar --}}
 
 
         {{-- ═══════════════════════════════════════════
@@ -868,9 +827,56 @@
                                     <textarea name="testimonials[{{ $i }}][quote]" class="form-input" style="min-height:70px;" placeholder="Tuliskan kutipan testimoni...">{{ $t['quote'] ?? '' }}</textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">URL Foto</label>
-                                    <input type="text" name="testimonials[{{ $i }}][img]" class="form-input"
-                                        value="{{ $t['img'] ?? '' }}" placeholder="https://example.com/foto.jpg">
+                                    <label class="form-label">Foto</label>
+
+                                    {{-- Hidden input retains current value — URL or local path --}}
+                                    <input type="hidden" name="testimonials[{{ $i }}][img]" value="{{ $t['img'] ?? '' }}">
+
+                                    {{-- Existing photo --}}
+                                    @if(!empty($t['img']) && !str_starts_with($t['img'], 'http'))
+                                        <div style="margin-bottom:10px;">
+                                            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
+                                                <img src="{{ Storage::url($t['img']) }}" alt=""
+                                                    style="width:48px;height:48px;border-radius:10px;object-fit:cover;">
+                                                <div>
+                                                    <div style="font-size:12px;color:#94a3b8;">Foto saat ini</div>
+                                                </div>
+                                            </div>
+                                            <label style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:#ef4444;cursor:pointer;font-weight:500;margin-top:8px;">
+                                                <input type="checkbox" name="testimonials[{{ $i }}][delete_img]" value="1" style="width:14px;height:14px;accent-color:#ef4444;cursor:pointer;">
+                                                Hapus foto
+                                            </label>
+                                        </div>
+                                    @elseif(!empty($t['img']))
+                                        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);margin-bottom:10px;">
+                                            <img src="{{ $t['img'] }}" alt=""
+                                                style="width:48px;height:48px;border-radius:10px;object-fit:cover;">
+                                            <div>
+                                                <div style="font-size:11px;color:#64748b;word-break:break-all;max-width:300px;">{{ $t['img'] }}</div>
+                                                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">URL eksternal</div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    {{-- Upload zone --}}
+                                    <div class="upload-zone" style="cursor:pointer;" onclick="document.getElementById('testi_img_{{ $i }}').click()">
+                                        <i data-lucide="upload-cloud" style="width:24px;height:24px;margin:0 auto 8px;display:block;color:#38bdf8;"></i>
+                                        <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:2px;">Klik atau drag & drop foto</div>
+                                        <div style="font-size:11px;color:#64748b;">JPG, PNG, WebP (maks 2MB)</div>
+                                        <div id="testiPreview_{{ $i }}" style="display:none;margin-top:8px;">
+                                            <img id="testiPreviewImg_{{ $i }}" src="" alt=""
+                                                style="width:56px;height:56px;object-fit:cover;border-radius:10px;margin:0 auto;display:block;">
+                                            <div id="testiPreviewName_{{ $i }}" style="font-size:11px;color:#22d3ee;text-align:center;margin-top:4px;"></div>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="testi_img_{{ $i }}" name="testimonials[{{ $i }}][img_file]"
+                                        accept=".jpg,.jpeg,.png,.webp" style="display:none;"
+                                        onchange="previewTestiImg(this, {{ $i }})">
+
+                                    {{-- Fallback URL input --}}
+                                    <div style="margin-top:8px;font-size:11px;color:#64748b;">Atau masukkan URL:</div>
+                                    <input type="text" name="testimonials[{{ $i }}][img_url]" class="form-input"
+                                        value="{{ !empty($t['img']) && str_starts_with($t['img'], 'http') ? $t['img'] : '' }}" placeholder="https://example.com/foto.jpg" style="margin-top:4px;">
                                 </div>
                             </div>
                         </div>
@@ -1059,23 +1065,18 @@
 
 @push('scripts')
     <script>
-        // ─── Tab switching ───
-        function switchTab(tabName, btn) {
-            // Hide all panels
-            document.querySelectorAll('.cms-panel').forEach(p => {
+        // ─── Section switching ───
+        function switchTab(tabName) {
+            document.querySelectorAll('.cms-panel').forEach(function(p) {
                 p.style.display = 'none';
                 p.classList.remove('cms-panel-animate');
             });
-            // Show target panel with animation
-            const target = document.getElementById('panel-' + tabName);
-            target.style.display = '';
-            // Force reflow so animation re-triggers
-            void target.offsetWidth;
-            target.classList.add('cms-panel-animate');
-            // Toggle active button
-            document.querySelectorAll('.cms-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            // Re-init lucide icons in newly shown panel
+            var target = document.getElementById('panel-' + tabName);
+            if (target) {
+                target.style.display = '';
+                void target.offsetWidth;
+                target.classList.add('cms-panel-animate');
+            }
             if (window.lucide) lucide.createIcons();
         }
 
@@ -1116,6 +1117,24 @@
         setupImagePreview('hero_image', 'heroPreview', 'heroPreviewImg', 'heroPreviewName', 'heroUploadZone');
         setupImagePreview('about_image', 'aboutPreview', 'aboutPreviewImg', 'aboutPreviewName', 'aboutUploadZone');
         setupImagePreview('dashboard_image', 'dashboardPreview', 'dashboardPreviewImg', 'dashboardPreviewName', 'dashboardUploadZone');
+
+        // ─── Testimonial image preview ───
+        function previewTestiImg(input, idx) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const box = document.getElementById('testiPreview_' + idx);
+                const img = document.getElementById('testiPreviewImg_' + idx);
+                const name = document.getElementById('testiPreviewName_' + idx);
+                if (box && img && name) {
+                    img.src = e.target.result;
+                    name.textContent = file.name;
+                    box.style.display = '';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
 
         // ─── Repeater Reordering Helpers ───
         function reindexRepeater(containerElement) {
@@ -1289,8 +1308,23 @@
                             <textarea name="testimonials[${testiIdx}][quote]" class="form-input" style="min-height:70px;" placeholder="Tuliskan kutipan testimoni..."></textarea>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">URL Foto</label>
-                            <input type="text" name="testimonials[${testiIdx}][img]" class="form-input" placeholder="https://example.com/foto.jpg">
+                            <label class="form-label">Foto</label>
+                            <input type="hidden" name="testimonials[${testiIdx}][img]" value="">
+                            <div class="upload-zone" style="cursor:pointer;" onclick="document.getElementById('testi_img_${testiIdx}').click()">
+                                <i data-lucide="upload-cloud" style="width:24px;height:24px;margin:0 auto 8px;display:block;color:#38bdf8;"></i>
+                                <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:2px;">Klik atau drag & drop foto</div>
+                                <div style="font-size:11px;color:#64748b;">JPG, PNG, WebP (maks 2MB)</div>
+                                <div id="testiPreview_${testiIdx}" style="display:none;margin-top:8px;">
+                                    <img id="testiPreviewImg_${testiIdx}" src="" alt=""
+                                        style="width:56px;height:56px;object-fit:cover;border-radius:10px;margin:0 auto;display:block;">
+                                    <div id="testiPreviewName_${testiIdx}" style="font-size:11px;color:#22d3ee;text-align:center;margin-top:4px;"></div>
+                                </div>
+                            </div>
+                            <input type="file" id="testi_img_${testiIdx}" name="testimonials[${testiIdx}][img_file]"
+                                accept=".jpg,.jpeg,.png,.webp" style="display:none;"
+                                onchange="previewTestiImg(this, ${testiIdx})">
+                            <div style="margin-top:8px;font-size:11px;color:#64748b;">Atau masukkan URL:</div>
+                            <input type="text" name="testimonials[${testiIdx}][img_url]" class="form-input" placeholder="https://example.com/foto.jpg" style="margin-top:4px;">
                         </div>
                     </div>
                 </div>`;
@@ -1449,6 +1483,26 @@
                     e.preventDefault();
                     ajaxSubmit(cmsForm);
                 });
+            }
+
+            // ─── Open section from URL hash ───
+            var hash = window.location.hash.slice(1);
+            if (hash) {
+                var sectionId = hash;
+                // Use the global goToLandingSection if available, else fallback
+                if (typeof window.goToLandingSection === 'function') {
+                    window.goToLandingSection(sectionId);
+                } else {
+                    // Fallback: show panel directly
+                    document.querySelectorAll('.cms-panel').forEach(function(p) {
+                        p.style.display = 'none';
+                    });
+                    var panel = document.getElementById('panel-' + sectionId);
+                    if (panel) {
+                        panel.style.display = '';
+                        panel.classList.add('cms-panel-animate');
+                    }
+                }
             }
         });
 
