@@ -86,7 +86,7 @@
                                 <div style="font-size:12px; font-weight:700; color:#0f172a; margin-bottom:2px;">Aktivitas Klinis</div>
                                 <div style="font-size:10px; color:#64748b;">Minggu ini</div>
                             </div>
-                            <div style="width:28px; height:28px; border-radius:8px; background:rgba(6,182,212,.1); display:flex; align-items:center; justify-content:center; color:#06b6d4; flex-shrink:0;">
+                            <div style="width:28px; height:28px; border-radius:8px; background:rgba(22,211,238,.1); display:flex; align-items:center; justify-content:center; color:#0EA5E9; flex-shrink:0;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
@@ -100,11 +100,11 @@
                         <div class="bar-chart" style="display:flex; align-items:flex-end; gap:5px; height:36px; width:100%;">
                             <span style="height:25%; background:rgba(34,211,238,0.2); flex:1; border-radius:3px;"></span>
                             <span style="height:45%; background:rgba(34,211,238,0.4); flex:1; border-radius:3px;"></span>
-                            <span style="height:35%; background:rgba(59,130,246,0.3); flex:1; border-radius:3px;"></span>
-                            <span style="height:65%; background:rgba(34,211,238,0.6); flex:1; border-radius:3px;"></span>
-                            <span style="height:50%; background:rgba(59,130,246,0.5); flex:1; border-radius:3px;"></span>
-                            <span style="height:80%; background:#3b82f6; flex:1; border-radius:3px;"></span>
-                            <span style="height:90%; background:#06b6d4; flex:1; border-radius:3px;"></span>
+                            <span style="height:35%; background:rgba(3,105,161,0.3); flex:1; border-radius:3px;"></span>
+                            <span style="height:65%; background:rgba(14,165,233,0.6); flex:1; border-radius:3px;"></span>
+                            <span style="height:50%; background:rgba(3,105,161,0.5); flex:1; border-radius:3px;"></span>
+                            <span style="height:80%; background:#0EA5E9; flex:1; border-radius:3px;"></span>
+                            <span style="height:90%; background:#22D3EE; flex:1; border-radius:3px;"></span>
                         </div>
                     </div>
 
@@ -135,7 +135,7 @@
                                 <div style="font-size:12px; font-weight:700; color:#0f172a; margin-bottom:2px;">Kompetensi</div>
                                 <div style="font-size:10px; color:#64748b;">Progress mahasiswa</div>
                             </div>
-                            <div style="width:28px; height:28px; border-radius:50%; background:rgba(37,99,235,0.1); display:flex; align-items:center; justify-content:center; color:#2563eb; flex-shrink:0;">
+                            <div style="width:28px; height:28px; border-radius:50%; background:rgba(3,105,161,0.1); display:flex; align-items:center; justify-content:center; color:#0369A1; flex-shrink:0;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 12a3 3 0 100-6 3 3 0 000 6z" />
@@ -149,7 +149,7 @@
                         </div>
                         
                         <div class="prog-bar" style="height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; width:100%;">
-                            <div class="prog-fill" style="width:76%; height:100%; background:linear-gradient(90deg, #06b6d4, #3b82f6); border-radius:999px;"></div>
+                            <div class="prog-fill" style="width:76%; height:100%; background:linear-gradient(90deg, #22D3EE, #0EA5E9); border-radius:999px;"></div>
                         </div>
                     </div>
 
@@ -181,7 +181,7 @@
                                 </div>
                             </div>
                             <div
-                                style="width:38px;height:38px;border-radius:10px;background:rgba(6,182,212,.2);display:flex;align-items:center;justify-content:center;color:#22d3ee;flex-shrink:0;margin-left:12px;">
+                                style="width:38px;height:38px;border-radius:10px;background:rgba(22,211,238,.2);display:flex;align-items:center;justify-content:center;color:#22d3ee;flex-shrink:0;margin-left:12px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.5l6 6 9-11" />
@@ -201,21 +201,19 @@
                     </p>
 
                     <ul class="about-check-list">
+                        @php
+                        $aboutPoints = $landing && $landing->about_points ? $landing->about_points : [
+                            ['text' => 'Mendukung pembelajaran klinis yang lebih terukur dan efisien dengan data yang akurat.'],
+                            ['text' => 'Memudahkan pemantauan mahasiswa oleh dosen dan dokter pembimbing secara real-time.'],
+                            ['text' => 'Menyediakan data evaluasi yang rapi, akurat, dan siap dianalisis kapan saja.']
+                        ];
+                        @endphp
+                        @foreach ($aboutPoints as $point)
                         <li>
                             <div class="about-check-icon">✓</div>
-                            <span class="about-check-text">Mendukung pembelajaran klinis yang lebih terukur dan efisien
-                                dengan data yang akurat.</span>
+                            <span class="about-check-text">{{ $point['text'] ?? '' }}</span>
                         </li>
-                        <li>
-                            <div class="about-check-icon">✓</div>
-                            <span class="about-check-text">Memudahkan pemantauan mahasiswa oleh dosen dan dokter pembimbing
-                                secara real-time.</span>
-                        </li>
-                        <li>
-                            <div class="about-check-icon">✓</div>
-                            <span class="about-check-text">Menyediakan data evaluasi yang rapi, akurat, dan siap dianalisis
-                                kapan saja.</span>
-                        </li>
+                        @endforeach
                     </ul>
 
                     <div style="margin-top:20px;">
@@ -272,7 +270,7 @@
      KEUNGGULAN
 ═══════════════════════════════════════════════════════ --}}
     @if(!$landing || ($landing->benefits_visible ?? true))
-    <section class="section" style="padding-top:0;">
+    <section class="section" id="keunggulan" style="padding-top:0;">
         <div class="container">
             <div class="text-center" data-aos="fade-up" style="margin-bottom:48px;">
                 <div class="section-label" style="justify-content:center;">Keunggulan</div>
@@ -284,18 +282,26 @@
             <div class="benefits-grid">
                 @php
                     $benefitsData = $landing && $landing->benefits ? $landing->benefits : [
-                        ['icon' => 'zap', 'title' => 'Efisiensi proses pendidikan kedokteran'],
-                        ['icon' => 'radar', 'title' => 'Monitoring dan evaluasi secara real-time'],
-                        ['icon' => 'file-check', 'title' => 'Dokumentasi digital tanpa kertas'],
-                        ['icon' => 'users', 'title' => 'Kolaborasi mahasiswa dan dokter pembimbing'],
+                        ['icon' => 'zap', 'title' => 'Efisiensi proses', 'description' => 'Catat aktivitas klinis langsung dari smartphone, tanpa perlu kertas dan alat tulis fisik.', 'stat' => '10x lebih cepat'],
+                        ['icon' => 'radar', 'title' => 'Monitoring real-time', 'description' => 'Pantau progress kompetensi mahasiswa secara langsung dari dashboard dosen.', 'stat' => '24/7 akses'],
+                        ['icon' => 'file-check', 'title' => 'Dokumentasi digital', 'description' => 'Semua data tersimpan rapi, mudah diakses kapan saja untuk laporan dan evaluasi.', 'stat' => '100% paperless'],
+                        ['icon' => 'users', 'title' => 'Kolaborasi terpadu', 'description' => 'Mahasiswa, dosen, dan institusi terhubung dalam satu platform terintegrasi.', 'stat' => '360° terintegrasi'],
                     ];
                 @endphp
                 @foreach ($benefitsData as $index => $b)
                     <article class="benefit-card glass" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
                         <div class="benefit-icon">
-                            <i data-lucide="{{ $b['icon'] }}" style="width:22px;height:22px;"></i>
+                            <i data-lucide="{{ $b['icon'] }}"></i>
                         </div>
-                        <h3 class="benefit-title">{{ $b['title'] }}</h3>
+                        <div class="benefit-body">
+                            <h3 class="benefit-title">{{ $b['title'] }}</h3>
+                            @if(!empty($b['description']))
+                                <p class="benefit-desc">{{ $b['description'] }}</p>
+                            @endif
+                        </div>
+                        @if(!empty($b['stat']))
+                            <div class="benefit-stat">{{ $b['stat'] }}</div>
+                        @endif
                     </article>
                 @endforeach
             </div>
@@ -325,7 +331,7 @@
                     <div class="glass-strong"
                         style="border-radius:22px;min-height:560px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:16px;">
                         <div
-                            style="width:72px;height:72px;border-radius:20px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+                            style="width:72px;height:72px;border-radius:20px;background:rgba(3,105,161,0.08);border:1px solid rgba(3,105,161,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
                             <i data-lucide="monitor" style="width:32px;height:32px;color:var(--blue-lt);"></i>
                         </div>
                         <h3 style="font-size:22px;font-weight:700;color:var(--text-primary);">Dashboard Preview</h3>
@@ -447,7 +453,7 @@
                         <div class="testi-stars">★★★★★</div>
                         <p class="testi-quote">"{{ $t['quote'] }}"</p>
                         <div class="testi-author">
-                            @php $imgSrc = !empty($t['img']) && !str_starts_with($t['img'], 'http') ? Storage::url($t['img']) : ($t['img'] ?? ''); @endphp
+                            @php $imgSrc = !empty($t['img']) && !str_starts_with($t['img'], 'http') ? asset('storage/' . $t['img']) : ($t['img'] ?? ''); @endphp
                             <img class="testi-author-img" src="{{ $imgSrc }}" alt="{{ $t['name'] }}"
                                 loading="lazy">
                             <div>

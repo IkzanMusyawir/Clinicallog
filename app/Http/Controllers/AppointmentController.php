@@ -41,6 +41,20 @@ class AppointmentController extends Controller
     }
 
     /**
+     * Get real-time status of appointments (pending count and latest ID).
+     */
+    public function getRealtimeStatus()
+    {
+        $pendingCount = Appointment::where('status', 'pending')->count();
+        $latestId = Appointment::max('id') ?? 0;
+
+        return response()->json([
+            'pending_count' => $pendingCount,
+            'latest_id'     => $latestId,
+        ]);
+    }
+
+    /**
      * Display a listing of appointments in the admin dashboard.
      */
     public function index()

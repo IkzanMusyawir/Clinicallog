@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FeatureController;
@@ -37,11 +38,11 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Dashboard
     Route::get('/admin/dashboard', function () {
-        $totalFeatures = Feature::count();
-        $totalUsers = User::count();
-        $recentFeatures = Feature::latest()->take(5)->get();
-        $totalAppointments = \App\Models\Appointment::count();
-        return view('admin.dashboard', compact('totalFeatures', 'totalUsers', 'recentFeatures', 'totalAppointments'));
+        $totalFeatures = Cache::remember('dash_features', 300, function () { return Feature::count(); });
+        $totalUsers = Cache::remember('dash_users', 300, function () { return User::count(); });
+        $recentAppointments = \App\Models\Appointment::latest()->take(5)->get();
+        $totalAppointments = Cache::remember('dash_appointments_total', 300, function () { return \App\Models\Appointment::count(); });
+        return view('admin.dashboard', compact('totalFeatures', 'totalUsers', 'recentAppointments', 'totalAppointments'));
     })->name('admin.dashboard');
 
     // Profile
@@ -51,17 +52,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Landing Page CMS
     Route::get('/admin/landing-page', [LandingPageController::class, 'index'])->name('admin.landing.edit');
+    Route::get('/admin/landing-page/panel/{name}', [LandingPageController::class, 'panel'])->name('admin.landing.panel');
     Route::put('/admin/landing-page', [LandingPageController::class, 'update'])->name('admin.landing.update');
 
     // Features CMS
+    Route::post('/admin/features/sort-order', [FeatureController::class, 'updateSortOrder'])->name('admin.features.sort-order');
     Route::get('/admin/features', [FeatureController::class, 'index'])->name('admin.features.index');
-    Route::get('/admin/features/create', [FeatureController::class, 'create'])->name('admin.features.create');
     Route::post('/admin/features', [FeatureController::class, 'store'])->name('admin.features.store');
-    Route::get('/admin/features/{id}/edit', [FeatureController::class, 'edit'])->name('admin.features.edit');
     Route::put('/admin/features/{id}', [FeatureController::class, 'update'])->name('admin.features.update');
     Route::delete('/admin/features/{id}', [FeatureController::class, 'destroy'])->name('admin.features.destroy');
 
     // Appointments Management
+    Route::get('/admin/appointments/realtime-status', [AppointmentController::class, 'getRealtimeStatus'])->name('admin.appointments.realtimeStatus');
     Route::get('/admin/appointments', [AppointmentController::class, 'index'])->name('admin.appointments.index');
     Route::patch('/admin/appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('admin.appointments.updateStatus');
     Route::delete('/admin/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('admin.appointments.destroy');

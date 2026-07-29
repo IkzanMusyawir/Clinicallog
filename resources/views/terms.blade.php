@@ -30,7 +30,7 @@
 
                 {{-- Centered Download Button --}}
                 <div style="display: flex; justify-content: center; margin-bottom: 32px;">
-                    <a href="{{ $landing->terms_gdrive_url ?? 'https://drive.google.com/file/d/1t87654321_your_terms_and_conditions_gdrive_id/view?usp=sharing' }}" target="_blank" class="btn-primary" style="border-radius: 12px; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 10px; background: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.25);">
+                    <a href="{{ $landing->terms_gdrive_url ?? 'https://drive.google.com/file/d/1t87654321_your_terms_and_conditions_gdrive_id/view?usp=sharing' }}" target="_blank" class="btn-primary" style="border-radius: 12px; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 10px; background: #0369A1; color: #fff; box-shadow: 0 4px 12px rgba(3,105,161,0.25);">
                         <i data-lucide="download" style="width: 18px; height: 18px;"></i>
                         Download S&K
                     </a>

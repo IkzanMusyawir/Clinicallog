@@ -28,7 +28,7 @@
                             <tr>
                                 <td>
                                     <div
-                                        style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;">
+                                        style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0369A1,#22D3EE);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;">
                                         {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                                     </div>
                                 </td>
@@ -52,7 +52,7 @@
         @else
             <div style="text-align:center;padding:64px 20px;">
                 <div
-                    style="width:64px;height:64px;border-radius:18px;background:rgba(37,99,235,.15);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
+                    style="width:64px;height:64px;border-radius:18px;background:rgba(3,105,161,.15);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
                     <i data-lucide="users" style="width:28px;height:28px;color:#60a5fa;"></i>
                 </div>
                 <h3 style="font-size:18px;font-weight:700;color:#f0f6ff;margin-bottom:8px;">Belum ada pengguna</h3>

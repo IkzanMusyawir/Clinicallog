@@ -27,10 +27,10 @@
 
     @php
         $stats = [
-            ['label'=>'Total Fitur',    'value'=>$totalFeatures ?? 0,    'icon'=>'layers',          'ibg'=>'#eff6ff','ic'=>'#2563eb','decor'=>'#2563eb','trend'=>'Fitur aktif','up'=>true],
+            ['label'=>'Total Fitur',    'value'=>$totalFeatures ?? 0,    'icon'=>'layers',          'ibg'=>'#eff6ff','ic'=>'#0369A1','decor'=>'#0369A1','trend'=>'Fitur aktif','up'=>true],
             ['label'=>'Pengguna',       'value'=>$totalUsers ?? 0,       'icon'=>'users',           'ibg'=>'#ecfdf5','ic'=>'#059669','decor'=>'#059669','trend'=>'Terdaftar', 'up'=>true],
             ['label'=>'Appointment',    'value'=>$totalAppointments ?? 0,'icon'=>'calendar-check',  'ibg'=>'#f5f3ff','ic'=>'#7c3aed','decor'=>'#7c3aed','trend'=>'Total',     'up'=>null],
-            ['label'=>'Institusi',      'value'=>$totalInstitutions ?? 0,'icon'=>'building-2',      'ibg'=>'#fff7ed','ic'=>'#d97706','decor'=>'#d97706','trend'=>'Terdaftar', 'up'=>true],
+
         ];
     @endphp
 
@@ -44,10 +44,10 @@
         </div>
         <div class="adm-page-actions">
             <a href="{{ route('home') }}" target="_blank" rel="noopener" class="adm-btn-secondary btn-sm">
-                <i data-lucide="eye"></i> Lihat Website
+                <x-icon name="eye"/> Lihat Website
             </a>
-            <a href="{{ route('admin.features.create') }}" class="adm-btn-primary btn-sm">
-                <i data-lucide="plus"></i> Tambah Fitur
+            <a href="{{ route('admin.landing.edit') }}#features" class="adm-btn-primary btn-sm">
+                <x-icon name="plus"/> Tambah Fitur
             </a>
         </div>
     </div>
@@ -58,10 +58,10 @@
         <div class="adm-stat-card stat-anim">
             <div class="adm-stat-card-top">
                 <div class="adm-stat-icon" style="background:{{ $s['ibg'] }};color:{{ $s['ic'] }};">
-                    <i data-lucide="{{ $s['icon'] }}"></i>
+                    <x-icon name="{{ $s['icon'] }}"/>
                 </div>
                 <div class="adm-stat-trend {{ $s['up'] ? 'up' : 'neutral' }}">
-                    @if($s['up'])<i data-lucide="trending-up" style="width:10px;height:10px;"></i>@endif
+                    @if($s['up'])<x-icon name="trending-up"/>@endif
                     {{ $s['trend'] }}
                 </div>
             </div>
@@ -75,35 +75,37 @@
     {{-- Main Grid --}}
     <div class="adm-grid-2-1 card-anim" style="margin-bottom:16px;">
 
-        {{-- Recent Features --}}
+        {{-- Recent Appointments --}}
         <div class="adm-card">
             <div class="adm-card-header">
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <i data-lucide="layers" style="width:15px;height:15px;color:#2563eb;"></i>
-                    <span class="adm-card-title">Fitur Terbaru</span>
+                    <x-icon name="calendar-check" style="color:#7c3aed;"/>
+                    <span class="adm-card-title">Appointment Terbaru</span>
                 </div>
-                <a href="{{ route('admin.features.index') }}" class="adm-card-link">Lihat semua →</a>
+                <a href="{{ route('admin.appointments.index') }}" class="adm-card-link">Lihat semua →</a>
             </div>
 
-            @if(isset($recentFeatures) && $recentFeatures->count())
+            @if(isset($recentAppointments) && $recentAppointments->count())
                 <div class="adm-table-wrap">
                     <table class="adm-table">
                         <thead>
                             <tr>
-                                <th>Nama Fitur</th>
-                                <th>Tanggal Dibuat</th>
-                                <th style="width:50px;"></th>
+                                <th>Nama</th>
+                                <th>Institusi</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($recentFeatures as $f)
+                            @foreach ($recentAppointments as $a)
                             <tr>
-                                <td>{{ $f->title }}</td>
-                                <td style="font-size:12.5px;color:#9ca3af;">{{ $f->created_at->format('d M Y') }}</td>
+                                <td>{{ $a->name }}</td>
+                                <td style="font-size:12.5px;color:#9ca3af;">{{ $a->institution }}</td>
                                 <td>
-                                    <a href="{{ route('admin.features.edit', $f->id) }}" class="adm-btn-icon" title="Edit">
-                                        <i data-lucide="edit-2"></i>
-                                    </a>
+                                    @php
+                                        $statusMap = ['pending' => ['label' => 'Pending', 'class' => 'adm-badge-yellow'], 'done' => ['label' => 'Selesai', 'class' => 'adm-badge-green'], 'cancelled' => ['label' => 'Batal', 'class' => 'adm-badge-red']];
+                                        $s = $statusMap[$a->status] ?? ['label' => $a->status, 'class' => 'badge-default'];
+                                    @endphp
+                                    <span class="adm-badge {{ $s['class'] }}">{{ $s['label'] }}</span>
                                 </td>
                             </tr>
                             @endforeach
@@ -112,40 +114,10 @@
                 </div>
             @else
                 <div class="adm-empty">
-                    <i data-lucide="inbox"></i>
-                    <p>Belum ada fitur. <a href="{{ route('admin.features.create') }}">Tambah sekarang</a></p>
+                    <x-icon name="inbox"/>
+                    <p>Belum ada appointment.</p>
                 </div>
             @endif
-        </div>
-
-        {{-- Quick Actions --}}
-        <div class="adm-card">
-            <div class="adm-card-header">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <i data-lucide="zap" style="width:15px;height:15px;color:#d97706;"></i>
-                    <span class="adm-card-title">Aksi Cepat</span>
-                </div>
-            </div>
-            <div class="adm-card-body">
-                @php
-                    $actions = [
-                        ['href'=>route('admin.features.create'),      'icon'=>'plus-circle',    'ibg'=>'#eff6ff','ic'=>'#2563eb', 'label'=>'Tambah Fitur Baru'],
-                        ['href'=>route('admin.landing.edit'),         'icon'=>'edit-3',         'ibg'=>'#ecfdf5','ic'=>'#059669', 'label'=>'Edit Landing Page'],
-                        ['href'=>route('admin.appointments.index'),   'icon'=>'calendar-check', 'ibg'=>'#f5f3ff','ic'=>'#7c3aed', 'label'=>'Kelola Appointment'],
-                        ['href'=>route('admin.users.index'),          'icon'=>'users',          'ibg'=>'#fff7ed','ic'=>'#d97706', 'label'=>'Kelola Pengguna'],
-                        ['href'=>route('home'),                       'icon'=>'globe',          'ibg'=>'#f0fdf4','ic'=>'#059669', 'label'=>'Lihat Website Live', 'ext'=>true],
-                    ];
-                @endphp
-                @foreach($actions as $a)
-                <a href="{{ $a['href'] }}" class="adm-quick-action" @if(!empty($a['ext'])) target="_blank" rel="noopener" @endif>
-                    <div class="adm-quick-action-icon" style="background:{{ $a['ibg'] }};color:{{ $a['ic'] }};">
-                        <i data-lucide="{{ $a['icon'] }}"></i>
-                    </div>
-                    <span>{{ $a['label'] }}</span>
-                    <i data-lucide="{{ !empty($a['ext']) ? 'external-link' : 'arrow-right' }}" class="adm-arrow" style="width:14px;height:14px;"></i>
-                </a>
-                @endforeach
-            </div>
         </div>
     </div>
 

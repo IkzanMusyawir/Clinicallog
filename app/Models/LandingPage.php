@@ -16,8 +16,10 @@ class LandingPage extends Model
         'navbar_links',
         'navbar_cta_text',
         'navbar_cta_url',
+        'navbar_visible',
         'about_title',
         'about_description',
+        'about_points',
         'about_image',
         'about_visible',
         'features_visible',
@@ -38,6 +40,8 @@ class LandingPage extends Model
         'pricing_visible',
         'terms_gdrive_url',
         'privacy_gdrive_url',
+        'footer_description',
+        'social_links',
     ];
 
     protected $casts = [
@@ -46,6 +50,8 @@ class LandingPage extends Model
         'steps'         => 'array',
         'testimonials'  => 'array',
         'pricing_plans' => 'array',
+        'about_points'  => 'array',
+        'social_links'  => 'array',
         'testimonials_visible' => 'boolean',
         'about_visible' => 'boolean',
         'features_visible' => 'boolean',
@@ -54,5 +60,6 @@ class LandingPage extends Model
         'steps_visible' => 'boolean',
         'pricing_visible' => 'boolean',
         'cta_visible' => 'boolean',
+        'navbar_visible' => 'boolean',
     ];
 }

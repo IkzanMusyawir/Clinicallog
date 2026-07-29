@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Feature;
+use App\Http\Requests\StoreFeatureRequest;
+use App\Http\Requests\UpdateFeatureRequest;
+use App\Services\FeatureService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class FeatureController extends Controller
 {
+    public function __construct(
+        private FeatureService $featureService
+    ) {}
+
     public function index()
     {
         return redirect()->route('admin.landing.edit');
@@ -15,37 +21,25 @@ class FeatureController extends Controller
 
     public function create()
     {
-        $totalFeatures = Feature::count();
-        return view('admin.features.form', compact('totalFeatures'));
+        return view('admin.features.form', [
+            'totalFeatures' => Feature::count(),
+        ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreFeatureRequest $request)
     {
-        $iconPath = null;
-        $iconName = $request->icon_name;
-
-        // If using Lucide icon name, no need for file upload
-        if (empty($iconName) && $request->hasFile('icon')) {
-            $iconPath = $request->file('icon')->store('features', 'public');
-        }
+        [$iconPath, $iconName] = $this->featureService->handleIconForNew($request);
 
         $totalFeatures = Feature::count();
-        $newPosition = (int) $request->sort_order;
+        $newPosition = $this->featureService->getClampedPosition(
+            $request->sort_order, $totalFeatures, true
+        );
 
-        // Clamp position: min 1, max totalFeatures + 1 (new item)
-        if ($newPosition < 1) $newPosition = 1;
-        if ($newPosition > $totalFeatures + 1) $newPosition = $totalFeatures + 1;
+        $this->featureService->shiftForNewItem($newPosition);
 
-        // Shift features at and after this position down
-        Feature::where('sort_order', '>=', $newPosition)
-            ->orderBy('sort_order', 'desc')
-            ->each(function ($f) {
-                $f->update(['sort_order' => $f->sort_order + 1]);
-            });
-
-        Feature::create([
-            'title' => $request->title,
-            'description' => $request->description,
+        $feature = Feature::create([
+            'title' => $request->title ?? '',
+            'description' => $request->description ?? '',
             'icon' => $iconPath,
             'icon_name' => $iconName,
             'sort_order' => $newPosition,
@@ -55,81 +49,39 @@ class FeatureController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Feature berhasil ditambahkan',
+                'feature' => $feature,
             ]);
         }
 
-        return redirect()->to(route('admin.landing.edit') . '#features')->with('success', 'Feature berhasil ditambahkan');
+        return redirect()->to(route('admin.landing.edit') . '#features')
+            ->with('success', 'Feature berhasil ditambahkan');
     }
 
     public function edit($id)
     {
         $feature = Feature::findOrFail($id);
-        $totalFeatures = Feature::count();
-        return view('admin.features.form', compact('feature', 'totalFeatures'));
+        return view('admin.features.form', [
+            'feature' => $feature,
+            'totalFeatures' => Feature::count(),
+        ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateFeatureRequest $request, $id)
     {
         $feature = Feature::findOrFail($id);
 
-        $iconPath = $feature->icon;
-        $iconName = $request->icon_name;
+        [$iconPath, $iconName] = $this->featureService->handleIcon($request, $feature);
 
-        // If icon_name is provided, clear uploaded icon
-        if (!empty($iconName)) {
-            if ($feature->icon) {
-                Storage::disk('public')->delete($feature->icon);
-            }
-            $iconPath = null;
-        } elseif ($request->hasFile('icon')) {
-            if ($feature->icon) {
-                Storage::disk('public')->delete($feature->icon);
-            }
-            $iconPath = $request->file('icon')->store('features', 'public');
-            $iconName = null;
-        }
-
-        // Handle delete icon checkbox
-        if ($request->input('delete_icon') == 1) {
-            if ($feature->icon) {
-                Storage::disk('public')->delete($feature->icon);
-            }
-            $iconPath = null;
-            $iconName = null;
-        }
-
-        // Handle sort_order reordering
-        $oldPosition = $feature->sort_order;
         $totalFeatures = Feature::count();
-        $newPosition = (int) ($request->sort_order ?? $oldPosition);
+        $newPosition = $this->featureService->getClampedPosition(
+            $request->sort_order ?? $feature->sort_order, $totalFeatures
+        );
 
-        // Clamp position
-        if ($newPosition < 1) $newPosition = 1;
-        if ($newPosition > $totalFeatures) $newPosition = $totalFeatures;
-
-        if ($oldPosition !== $newPosition) {
-            if ($newPosition < $oldPosition) {
-                // Moving up: shift features between newPos and oldPos-1 down by 1
-                Feature::where('id', '!=', $feature->id)
-                    ->whereBetween('sort_order', [$newPosition, $oldPosition - 1])
-                    ->orderBy('sort_order', 'desc')
-                    ->each(function ($f) {
-                        $f->update(['sort_order' => $f->sort_order + 1]);
-                    });
-            } else {
-                // Moving down: shift features between oldPos+1 and newPos up by 1
-                Feature::where('id', '!=', $feature->id)
-                    ->whereBetween('sort_order', [$oldPosition + 1, $newPosition])
-                    ->orderBy('sort_order', 'asc')
-                    ->each(function ($f) {
-                        $f->update(['sort_order' => $f->sort_order - 1]);
-                    });
-            }
-        }
+        $this->featureService->reorder($feature->sort_order, $newPosition, $feature->id);
 
         $feature->update([
-            'title' => $request->title,
-            'description' => $request->description,
+            'title' => $request->title ?? '',
+            'description' => $request->description ?? '',
             'icon' => $iconPath,
             'icon_name' => $iconName,
             'sort_order' => $newPosition,
@@ -142,7 +94,8 @@ class FeatureController extends Controller
             ]);
         }
 
-        return redirect()->to(route('admin.landing.edit') . '#features')->with('success', 'Feature berhasil diupdate');
+        return redirect()->to(route('admin.landing.edit') . '#features')
+            ->with('success', 'Feature berhasil diupdate');
     }
 
     public function destroy(Request $request, $id)
@@ -151,16 +104,11 @@ class FeatureController extends Controller
         $deletedPosition = $feature->sort_order;
 
         if ($feature->icon) {
-            Storage::disk('public')->delete($feature->icon);
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($feature->icon);
         }
 
         $feature->delete();
-
-        Feature::where('sort_order', '>', $deletedPosition)
-            ->orderBy('sort_order', 'asc')
-            ->each(function ($f) {
-                $f->update(['sort_order' => $f->sort_order - 1]);
-            });
+        $this->featureService->compactAfterDelete($deletedPosition);
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -169,6 +117,19 @@ class FeatureController extends Controller
             ]);
         }
 
-        return redirect()->to(route('admin.landing.edit') . '#features')->with('success', 'Feature berhasil dihapus');
+        return redirect()->to(route('admin.landing.edit') . '#features')
+            ->with('success', 'Feature berhasil dihapus');
+    }
+
+    public function updateSortOrder(Request $request)
+    {
+        $ids = $request->input('ids', '');
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        foreach ($ids as $index => $id) {
+            Feature::where('id', $id)->update(['sort_order' => $index + 1]);
+        }
+        return response()->json(['success' => true]);
     }
 }

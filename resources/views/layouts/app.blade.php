@@ -11,8 +11,7 @@
     {{-- CSS --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/clinicallog.css') }}">
 
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -35,6 +34,8 @@
     </div>
 
     {{-- Navbar --}}
+    @php $navbarVisible = $landing && isset($landing->navbar_visible) ? $landing->navbar_visible : true; @endphp
+    @if($navbarVisible)
     <header class="navbar" id="navbar" role="banner">
         @php
             $navLinks = $landing && $landing->navbar_links ? $landing->navbar_links : [
@@ -55,6 +56,9 @@
                 }
                 if (isset($landing->features_visible) && !$landing->features_visible) {
                     $navLinks = array_filter($navLinks, fn($l) => !str_contains($l['url'] ?? '', '#fitur'));
+                }
+                if (isset($landing->benefits_visible) && !$landing->benefits_visible) {
+                    $navLinks = array_filter($navLinks, fn($l) => !str_contains($l['url'] ?? '', '#keunggulan'));
                 }
                 if (isset($landing->dashboard_visible) && !$landing->dashboard_visible) {
                     $navLinks = array_filter($navLinks, fn($l) => !str_contains($l['url'] ?? '', '#dashboard'));
@@ -92,7 +96,7 @@
             </a>
 
             {{-- Desktop nav --}}
-            <nav aria-label="Navigasi utama">
+            <nav aria-label="Navigasi utama" id="navbarNav">
                 <ul class="navbar-nav">
                     @foreach($navLinks as $link)
                         <li><a href="{{ $getAnchorUrl($link['url'] ?? '#') }}">{{ $link['label'] }}</a></li>
@@ -126,6 +130,7 @@
             <a href="{{ $getAnchorUrl($navCtaUrl) }}" class="btn-primary mt-2" style="border-radius:10px;">{{ $navCtaText }}</a>
         </nav>
     </header>
+    @endif
 
     {{-- Page content --}}
     <main role="main">
@@ -208,7 +213,7 @@
             {{-- Form Content --}}
             <div id="appointmentFormContent">
                 <div style="text-align:center;margin-bottom:28px;">
-                    <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(37,99,235,.1),rgba(6,182,212,.1));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--blue-lt);box-shadow: 0 8px 20px rgba(37,99,235,0.06);">
+                    <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(3,105,161,.1),rgba(22,211,238,.1));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--blue-lt);box-shadow: 0 8px 20px rgba(3,105,161,0.06);">
                         <i data-lucide="calendar-check-2" style="width:26px;height:26px;"></i>
                     </div>
                     <h3 style="font-size:22px;font-weight:800;color:var(--text-primary);letter-spacing:-0.02em;">Jadwalkan Demo Gratis</h3>
@@ -279,7 +284,7 @@
 
                     <div id="appFormError" style="display:none;padding:12px 16px;border-radius:12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);color:#ef4444;font-size:13px;margin-bottom:18px;line-height:1.5;"></div>
 
-                    <button type="submit" id="appSubmitBtn" class="btn-primary" style="width:100%;justify-content:center;border-radius:14px;padding:14px 28px;box-shadow: 0 10px 25px rgba(37,99,235,0.15);">
+                    <button type="submit" id="appSubmitBtn" class="btn-primary" style="width:100%;justify-content:center;border-radius:14px;padding:14px 28px;box-shadow: 0 10px 25px rgba(3,105,161,0.15);">
                         Kirim Pengajuan Demo
                     </button>
                 </form>
@@ -310,7 +315,7 @@
             width: 500px;
             height: 500px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(59,130,246,.07) 0%, rgba(6,182,212,.04) 40%, transparent 70%);
+            background: radial-gradient(circle, rgba(3,105,161,.07) 0%, rgba(22,211,238,.04) 40%, transparent 70%);
             pointer-events: none;
             z-index: 0;
             transform: translate(-50%, -50%);
@@ -324,7 +329,7 @@
         .cursor-glow.hover-interactive {
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, rgba(37,99,235,.1) 0%, rgba(6,182,212,.06) 40%, transparent 70%);
+            background: radial-gradient(circle, rgba(3,105,161,.1) 0%, rgba(22,211,238,.06) 40%, transparent 70%);
         }
 
         .cursor-dot {
@@ -332,7 +337,7 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            background: linear-gradient(135deg, #0369A1, #22D3EE);
             pointer-events: none;
             z-index: 99998;
             transform: translate(-50%, -50%);
@@ -342,7 +347,7 @@
                         box-shadow .25s ease;
             opacity: 0;
             will-change: transform;
-            box-shadow: 0 0 8px rgba(37,99,235,.3);
+            box-shadow: 0 0 8px rgba(3,105,161,.3);
         }
         .cursor-dot.active {
             opacity: 1;
@@ -351,14 +356,14 @@
             width: 40px;
             height: 40px;
             background: transparent;
-            border: 2px solid rgba(37,99,235,.35);
-            box-shadow: 0 0 20px rgba(37,99,235,.1);
+            border: 2px solid rgba(3,105,161,.35);
+            box-shadow: 0 0 20px rgba(3,105,161,.1);
         }
         .cursor-dot.clicking {
             width: 30px;
             height: 30px;
             border-width: 3px;
-            border-color: rgba(6,182,212,.5);
+            border-color: rgba(22,211,238,.5);
         }
 
         /* Card tilt glow on hover */
@@ -476,7 +481,7 @@
         .modal-input:focus {
             background: #ffffff;
             border-color: var(--blue-lt);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(3, 105, 161, 0.1);
         }
         .modal-textarea {
             min-height: 80px;
@@ -641,7 +646,7 @@
 
         // Throttled scroll handler using requestAnimationFrame
         window.addEventListener('scroll', () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 20);
+            if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20);
             if (!ticking) {
                 requestAnimationFrame(() => {
                     updateActiveNav();
@@ -671,20 +676,52 @@
         const iconMenu = document.getElementById('iconMenu');
         const iconClose = document.getElementById('iconClose');
 
-        toggle.addEventListener('click', () => {
-            const open = mobileNav.classList.toggle('open');
-            toggle.setAttribute('aria-expanded', open);
-            iconMenu.style.display = open ? 'none' : '';
-            iconClose.style.display = open ? '' : 'none';
-        });
-        mobileNav.querySelectorAll('a').forEach(a => {
-            a.addEventListener('click', () => {
+        if (toggle && mobileNav) {
+            function closeMobileMenu() {
                 mobileNav.classList.remove('open');
                 toggle.setAttribute('aria-expanded', 'false');
-                iconMenu.style.display = '';
-                iconClose.style.display = 'none';
+                if (iconMenu) iconMenu.style.display = '';
+                if (iconClose) iconClose.style.display = 'none';
+                document.body.classList.remove('menu-open');
+            }
+
+            function openMobileMenu() {
+                mobileNav.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+                if (iconMenu) iconMenu.style.display = 'none';
+                if (iconClose) iconClose.style.display = '';
+                document.body.classList.add('menu-open');
+            }
+
+            toggle.addEventListener('click', () => {
+                if (mobileNav.classList.contains('open')) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
             });
+
+            // Close on menu link click
+            mobileNav.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', closeMobileMenu);
+            });
+
+            // Close on outside click
+            document.addEventListener('click', (e) => {
+                if (mobileNav.classList.contains('open') &&
+                    !mobileNav.contains(e.target) &&
+                    !toggle.contains(e.target)) {
+                    closeMobileMenu();
+            }
         });
+
+        // Close on resize back to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1100 && mobileNav.classList.contains('open')) {
+                closeMobileMenu();
+            }
+        });
+        }
 
         // Modern Custom Scroll Reveal using Intersection Observer (always animate up and down)
         const observerOptions = {
@@ -896,7 +933,7 @@
                 var rotateX = ((y - cy) / cy) * -4;
                 var rotateY = ((x - cx) / cx) * 4;
                 card.style.transform = 'perspective(800px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02,1.02,1)';
-                glowEl.style.background = 'radial-gradient(circle at ' + x + 'px ' + y + 'px, rgba(59,130,246,.08) 0%, transparent 60%)';
+                glowEl.style.background = 'radial-gradient(circle at ' + x + 'px ' + y + 'px, rgba(3,105,161,.08) 0%, transparent 60%)';
             }, { passive: true });
 
             card.addEventListener('mouseleave', function() {
