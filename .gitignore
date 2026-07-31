@@ -10,6 +10,7 @@
 .cursor/
 .remember/
 .agents/
+skills-lock.json
 /.idea
 /.nova
 /.phpunit.cache
