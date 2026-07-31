@@ -9,7 +9,7 @@
 .qoder/
 .cursor/
 .remember/
-..agents/
+.agents/
 /.idea
 /.nova
 /.phpunit.cache
