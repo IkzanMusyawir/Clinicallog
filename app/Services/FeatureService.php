@@ -64,10 +64,7 @@ class FeatureService
     public function shiftForNewItem(int $newPosition): void
     {
         Feature::where('sort_order', '>=', $newPosition)
-            ->orderBy('sort_order', 'desc')
-            ->each(function ($f) {
-                $f->update(['sort_order' => $f->sort_order + 1]);
-            });
+            ->increment('sort_order');
     }
 
     public function reorder(int $oldPosition, int $newPosition, int $featureId): void
@@ -77,26 +74,17 @@ class FeatureService
         if ($newPosition < $oldPosition) {
             Feature::where('id', '!=', $featureId)
                 ->whereBetween('sort_order', [$newPosition, $oldPosition - 1])
-                ->orderBy('sort_order', 'desc')
-                ->each(function ($f) {
-                    $f->update(['sort_order' => $f->sort_order + 1]);
-                });
+                ->increment('sort_order');
         } else {
             Feature::where('id', '!=', $featureId)
                 ->whereBetween('sort_order', [$oldPosition + 1, $newPosition])
-                ->orderBy('sort_order', 'asc')
-                ->each(function ($f) {
-                    $f->update(['sort_order' => $f->sort_order - 1]);
-                });
+                ->decrement('sort_order');
         }
     }
 
     public function compactAfterDelete(int $deletedPosition): void
     {
         Feature::where('sort_order', '>', $deletedPosition)
-            ->orderBy('sort_order', 'asc')
-            ->each(function ($f) {
-                $f->update(['sort_order' => $f->sort_order - 1]);
-            });
+            ->decrement('sort_order');
     }
 }

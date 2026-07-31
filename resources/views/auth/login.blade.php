@@ -282,7 +282,7 @@
     </div>
     <div class="auth-wrapper">
         <div class="auth-header">
-            <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog">
+            <img src="{{ asset('assets/logo.webp') }}" alt="ClinicalLog">
             <h1>Masuk ke Admin</h1>
             <p>Platform Medical Data &amp; E-Logbook</p>
         </div>
@@ -317,7 +317,7 @@
                     <input type="checkbox" name="remember">
                     <span>Ingat saya</span>
                 </label>
-                <button type="submit" class="btn-primary">
+                <button type="submit" class="btn-primary" onclick="this.disabled=true;this.form.submit();">
                     Masuk
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
@@ -327,71 +327,10 @@
             </form>
         </div>
         <div class="auth-footer">
-            <a href="{{ route('register') }}" class="auth-link">Belum punya akun? Daftar</a>
-            <br><br>
             <a href="{{ route('home') }}">← Kembali ke Website</a>
         </div>
     </div>
 
-    <script>
-        // ─── Cursor Glow (identik landing page) ───
-        (function() {
-            var glow = document.getElementById('cursorGlow');
-            var dot = document.getElementById('cursorDot');
-            if (!glow || !dot) return;
-
-            var mouseX = -100, mouseY = -100;
-            var glowX = -100, glowY = -100;
-            var isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            if (isTouch) return;
-
-            var interactiveSelectors = 'a, button, .btn-primary, input, label, .auth-card, .form-input';
-
-            document.addEventListener('mousemove', function(e) {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                dot.style.left = mouseX + 'px';
-                dot.style.top = mouseY + 'px';
-                if (!dot.classList.contains('active')) {
-                    dot.classList.add('active');
-                    glow.classList.add('active');
-                }
-            }, { passive: true });
-
-            function animateGlow() {
-                glowX += (mouseX - glowX) * 0.12;
-                glowY += (mouseY - glowY) * 0.12;
-                glow.style.left = glowX + 'px';
-                glow.style.top = glowY + 'px';
-                requestAnimationFrame(animateGlow);
-            }
-            animateGlow();
-
-            document.addEventListener('mouseleave', function() {
-                glow.classList.remove('active');
-                dot.classList.remove('active');
-            });
-            document.addEventListener('mouseenter', function() {
-                glow.classList.add('active');
-                dot.classList.add('active');
-            });
-
-            document.addEventListener('mousedown', function() { dot.classList.add('clicking'); });
-            document.addEventListener('mouseup', function() { dot.classList.remove('clicking'); });
-
-            document.addEventListener('mouseover', function(e) {
-                if (e.target.closest(interactiveSelectors)) {
-                    dot.classList.add('hover-interactive');
-                    glow.classList.add('hover-interactive');
-                }
-            }, { passive: true });
-            document.addEventListener('mouseout', function(e) {
-                if (e.target.closest(interactiveSelectors)) {
-                    dot.classList.remove('hover-interactive');
-                    glow.classList.remove('hover-interactive');
-                }
-            }, { passive: true });
-        })();
-    </script>
+    <x-cursor-glow selectors="'a, button, .btn-primary, input, label, .auth-card, .form-input'"/>
 </body>
 </html>

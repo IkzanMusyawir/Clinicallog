@@ -242,6 +242,9 @@
 
             <div class="features-grid">
                 @foreach ($features as $index => $feature)
+                    @if(trim($feature->title) === '' && trim($feature->description ?? '') === '')
+                        @continue
+                    @endif
                     <article class="feature-card glass" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
                         <div class="feature-icon">
                             @if ($feature->icon_name)
@@ -256,7 +259,7 @@
                                 </svg>
                             @endif
                         </div>
-                        <h3 class="feature-title">{{ $feature->title }}</h3>
+                        <h3 class="feature-title">{{ $feature->title ?: 'Fitur' }}</h3>
                         <p class="feature-desc">{{ $feature->description }}</p>
                     </article>
                 @endforeach

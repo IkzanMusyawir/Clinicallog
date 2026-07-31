@@ -10,6 +10,7 @@ use App\Models\Feature;
 use App\Models\User;
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +19,19 @@ use App\Http\Controllers\AppointmentController;
 */
 
 Route::get('/', function () {
-    $landing = LandingPage::first();
+    $landingData = Cache::remember('landing_page_data', 3600, function () {
+        $model = LandingPage::first();
+        return $model ? $model->getAttributes() : null;
+    });
+
+    $landing = null;
+    if ($landingData) {
+        $landing = new LandingPage();
+        $landing->setRawAttributes($landingData);
+        $landing->exists = true;
+        $landing->syncOriginal();
+    }
+
     $features = Feature::orderBy('sort_order')->get();
 
     return view('landing', compact('landing', 'features'));
@@ -27,7 +40,19 @@ Route::get('/', function () {
 Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
 
 Route::get('/syarat-ketentuan', function () {
-    $landing = LandingPage::first();
+    $landingData = Cache::remember('landing_page_data', 3600, function () {
+        $model = LandingPage::first();
+        return $model ? $model->getAttributes() : null;
+    });
+
+    $landing = null;
+    if ($landingData) {
+        $landing = new LandingPage();
+        $landing->setRawAttributes($landingData);
+        $landing->exists = true;
+        $landing->syncOriginal();
+    }
+
     return view('terms', compact('landing'));
 })->name('terms');
 
@@ -35,12 +60,13 @@ Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Admin Dashboard
     Route::get('/admin/dashboard', function () {
         $totalFeatures = Cache::remember('dash_features', 300, function () { return Feature::count(); });
         $totalUsers = Cache::remember('dash_users', 300, function () { return User::count(); });
-        $recentAppointments = \App\Models\Appointment::latest()->take(5)->get();
+        $recentAppointments = Cache::remember('dash_recent_appointments', 300, function () { return \App\Models\Appointment::latest()->take(5)->get(['name', 'institution', 'status'])->toArray(); });
+        $recentAppointments = collect($recentAppointments)->map(fn($a) => (object) $a);
         $totalAppointments = Cache::remember('dash_appointments_total', 300, function () { return \App\Models\Appointment::count(); });
         return view('admin.dashboard', compact('totalFeatures', 'totalUsers', 'recentAppointments', 'totalAppointments'));
     })->name('admin.dashboard');
@@ -69,10 +95,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/admin/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('admin.appointments.destroy');
 
     // Users Management
-    Route::get('/admin/users', function () {
-        $users = User::paginate(10);
-        return view('admin.users.index', compact('users'));
-    })->name('admin.users.index');
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
 require __DIR__ . '/auth.php';

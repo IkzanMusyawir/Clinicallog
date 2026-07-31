@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin') — ClinicalLog</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=7">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @stack('head')
 </head>
@@ -20,7 +20,7 @@
     <aside class="adm-sidebar" id="adminSidebar" role="navigation" aria-label="Admin navigation">
         <div class="adm-brand">
             <div class="adm-brand-inner">
-                <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" class="adm-brand-logo">
+                <img src="{{ asset('assets/logo.webp') }}" alt="ClinicalLog" class="adm-brand-logo">
             </div>
             <button type="button" class="adm-sidebar-close" onclick="closeSidebar()" title="Tutup">
                 <x-icon name="x" />
@@ -33,11 +33,15 @@
                 <span class="adm-nav-label">Dashboard</span>
             </a>
             <div class="adm-nav-dropdown-wrapper {{ request()->routeIs('admin.landing.*') ? 'open' : '' }}">
-                <a href="#" class="adm-nav-item {{ request()->routeIs('admin.landing.*') ? 'active' : '' }}" onclick="toggleLandingDropdown(event)">
-                    <span class="adm-nav-icon"><x-icon name="file-text" /></span>
-                    <span class="adm-nav-label">Landing Page</span>
-                    <x-icon name="chevron-down" class="adm-nav-chevron" />
-                </a>
+                <div style="display:flex;align-items:stretch;">
+                    <a href="{{ route('admin.landing.edit') }}" class="adm-nav-item {{ request()->routeIs('admin.landing.*') ? 'active' : '' }}" style="flex:1;border-radius:10px 0 0 10px;">
+                        <span class="adm-nav-icon"><x-icon name="file-text" /></span>
+                        <span class="adm-nav-label">Konten Website</span>
+                    </a>
+                    <button type="button" onclick="toggleLandingDropdown(event)" class="adm-nav-item" style="border:none;border-radius:0 10px 10px 0;padding:10px 8px;cursor:pointer;flex-shrink:0;background:none;color:var(--atext2);font-family:inherit;" aria-label="Toggle submenu">
+                        <x-icon name="chevron-down" class="adm-nav-chevron" />
+                    </button>
+                </div>
                 <div class="adm-nav-sub" id="landingSubNav">
                     <a href="#" class="adm-nav-sub-item" data-section="hero" onclick="event.preventDefault(); goToLandingSection('hero'); return false;">Hero</a>
                     <a href="#" class="adm-nav-sub-item" data-section="navigation" onclick="event.preventDefault(); goToLandingSection('navigation'); return false;">Navigasi</a>
@@ -103,14 +107,14 @@
             </div>
         </header>
         @if (session('success'))
-        <div class="adm-alert adm-alert-success" id="flashAlert">
+        <div class="adm-alert adm-alert-success" id="flashSuccess">
             <x-icon name="check-circle" />
             <span>{{ session('success') }}</span>
             <button onclick="dismissAlert(this.closest('.adm-alert'))" class="adm-alert-close"><x-icon name="x" /></button>
         </div>
         @endif
         @if (session('error'))
-        <div class="adm-alert adm-alert-error" id="flashAlert">
+        <div class="adm-alert adm-alert-error" id="flashError">
             <x-icon name="alert-circle" />
             <span>{{ session('error') }}</span>
             <button onclick="dismissAlert(this.closest('.adm-alert'))" class="adm-alert-close"><x-icon name="x" /></button>

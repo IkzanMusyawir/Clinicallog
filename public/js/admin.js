@@ -134,14 +134,14 @@ function ajaxAction(url, method, data, options) {
         })
         .then(function (res) {
             if (res.status >= 200 && res.status < 300 && res.body.success) {
-                showToast(res.body.message || 'Berhasil!', 'success');
+                if (!options.silent) showToast(res.body.message || 'Berhasil!', 'success');
                 if (options.onSuccess) options.onSuccess(res.body);
             } else if (res.body.errors) {
                 var msgs = Object.values(res.body.errors).flat().join(', ');
                 showToast(msgs, 'error', 6000);
                 if (options.onError) options.onError(res.body);
             } else {
-                showToast(res.body.message || 'Terjadi kesalahan.', 'error');
+                if (!options.silent) showToast(res.body.message || 'Terjadi kesalahan.', 'error');
                 if (options.onError) options.onError(res.body);
             }
         })
@@ -170,90 +170,21 @@ function toggleLandingDropdown(e) {
     
 }
 
-function toggleStatus(trigger) {
-    var dropdown = trigger.closest('.status-dropdown');
-    var menu = dropdown.querySelector('.status-menu');
-    if (!menu) {
-        menu = document.querySelector('.status-menu[data-dropdown-id="' + dropdown.dataset.id + '"]');
-    }
-    var isOpen = dropdown.classList.contains('open');
+/* ─── Appointments: Update Status ─── */
 
-    document.querySelectorAll('.status-dropdown.open').forEach(function (d) {
-        if (d !== dropdown) {
-            d.classList.remove('open');
-            var m = document.querySelector('.status-menu[data-dropdown-id="' + d.dataset.id + '"]');
-            if (m) m.classList.remove('open');
-        }
-    });
-
-    if (isOpen) {
-        dropdown.classList.remove('open');
-        if (menu) menu.classList.remove('open');
-        return;
-    }
-
-    if (menu) {
-        menu.setAttribute('data-dropdown-id', dropdown.dataset.id);
-        document.body.appendChild(menu);
-
-        var rect = trigger.getBoundingClientRect();
-        var menuWidth = 170;
-        var top = rect.bottom + window.scrollY + 6;
-        var left = rect.right - menuWidth + window.scrollX;
-
-        if (left < 4) left = 4;
-
-        menu.style.position = 'absolute';
-        menu.style.top = top + 'px';
-        menu.style.left = left + 'px';
-        menu.style.width = menuWidth + 'px';
-
-        dropdown.classList.add('open');
-        menu.offsetHeight;
-        menu.classList.add('open');
-    }
-}
-
-function pickStatus(option) {
-    var newStatus = option.dataset.value;
-    var menu = option.closest('.status-menu');
-    var dropdown = document.querySelector('.status-dropdown[data-id="' + menu.dataset.dropdownId + '"]');
-    var trigger = dropdown.querySelector('.status-trigger');
-    var id = dropdown.dataset.id;
-
-    var ripple = document.createElement('span');
-    ripple.className = 'opt-ripple';
-    var bRect = option.getBoundingClientRect();
-    var size = Math.max(bRect.width, bRect.height);
-    ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;' +
-        'left:' + (option.clientX - bRect.left - size / 2) + 'px;' +
-        'top:' + (option.clientY - bRect.top - size / 2) + 'px;';
-    option.appendChild(ripple);
-    setTimeout(function () { ripple.remove(); }, 500);
-
-    option.classList.add('picking');
-    setTimeout(function () { option.classList.remove('picking'); }, 150);
-
-    dropdown.classList.remove('open');
-    menu.classList.remove('open');
-    dropdown.appendChild(menu);
-
-    if (trigger.classList.contains(newStatus)) return;
-
-    var statusLabels = { pending: 'Pending', done: 'Selesai', cancelled: 'Batal' };
-    trigger.className = 'status-trigger saving ' + newStatus;
-    trigger.querySelector('.status-text').textContent = statusLabels[newStatus] || newStatus;
-
-    menu.querySelectorAll('.status-option').forEach(function (o) {
-        o.classList.toggle('selected', o.dataset.value === newStatus);
-    });
-
+function updateAppointmentStatus(id, newStatus, selectEl) {
+    var parent = selectEl.closest('.status-select');
+    parent.style.opacity = '.5';
     ajaxAction(APP_URL + '/admin/appointments/' + id + '/status', 'PATCH', { status: newStatus }, {
         onSuccess: function () {
-            trigger.classList.remove('saving');
+            parent.className = 'status-select ' + newStatus;
+            parent.style.opacity = '';
+            parent.querySelector('.status-text').textContent = {
+                pending: 'Pending', done: 'Selesai', cancelled: 'Batal'
+            }[newStatus];
         },
         onError: function () {
-            trigger.classList.remove('saving');
+            parent.style.opacity = '';
             showToast('Gagal memperbarui status', 'error');
         }
     });
@@ -261,26 +192,82 @@ function pickStatus(option) {
 
 /* ─── Landing Page CMS ─── */
 
-    function switchTab(tabName) {
-        document.querySelectorAll('.cms-panel').forEach(function (p) {
-            p.style.display = 'none';
-            p.classList.remove('cms-panel-animate');
-        });
-        var target = document.getElementById('panel-' + tabName);
-        if (!target) return;
+window._panelCache = {};
 
+function hideSkeleton() {
+    var s = document.querySelector('.adm-skeleton.active');
+    if (s) s.classList.remove('active');
+}
+
+function switchTab(tabName) {
+    document.querySelectorAll('.cms-panel').forEach(function (p) {
+        p.style.display = 'none';
+        p.classList.remove('cms-panel-animate');
+    });
+    var target = document.getElementById('panel-' + tabName);
+    if (!target) { hideSkeleton(); return; }
+
+    if (target.innerHTML.trim() !== '') {
         target.style.display = '';
         void target.offsetWidth;
         target.classList.add('cms-panel-animate');
+        hideSkeleton();
+        return;
+    }
+
+    target.innerHTML = '<div class="cms-panel-loading">Memuat...</div>';
+    target.style.display = '';
+
+    if (window._panelCache[tabName]) {
+        target.innerHTML = window._panelCache[tabName];
+        void target.offsetWidth;
+        target.classList.add('cms-panel-animate');
+        initPanelFeatures(tabName);
+        hideSkeleton();
+        return;
+    }
+
+    var timedOut = false;
+    var timer = setTimeout(function () { timedOut = true; hideSkeleton(); }, 8000);
+
+    fetch(APP_URL + '/admin/landing-page/panel/' + tabName, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }
+    })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function (html) {
+        if (timedOut) return;
+        clearTimeout(timer);
+        window._panelCache[tabName] = html;
+        target.innerHTML = html;
+        void target.offsetWidth;
+        target.classList.add('cms-panel-animate');
+        initPanelFeatures(tabName);
+        hideSkeleton();
+    })
+    .catch(function () {
+        clearTimeout(timer);
+        target.innerHTML = '<div class="cms-panel-loading">Gagal memuat panel. <a href="javascript:void(0)" onclick="switchTab(\'' + tabName + '\')" style="color:#38bdf8;">Coba lagi</a></div>';
+        hideSkeleton();
+    });
+}
+
+function initPanelFeatures(tabName) {
+    if (tabName === 'hero' || !tabName) {
+        if (document.getElementById('hero_image')) {
+            setupImagePreview('hero_image', 'heroPreview', 'heroPreviewImg', 'heroPreviewName', 'heroUploadZone');
+            setupImagePreview('about_image', 'aboutPreview', 'aboutPreviewImg', 'aboutPreviewName', 'aboutUploadZone');
+            setupImagePreview('dashboard_image', 'dashboardPreview', 'dashboardPreviewImg', 'dashboardPreviewName', 'dashboardUploadZone');
+        }
+    }
 }
 
 function goToLandingSection(sectionId) {
     if (window.location.href.indexOf('admin/landing-page') === -1) {
-        var url = APP_URL + '/admin/landing-page/#' + sectionId;
+        window._landingTarget = sectionId;
         if (window._swup) {
-            window._swup.navigate(url);
+            window._swup.navigate(APP_URL + '/admin/landing-page');
         } else {
-            window.location.href = url;
+            window.location.href = APP_URL + '/admin/landing-page/#' + sectionId;
         }
         return;
     }
@@ -299,16 +286,10 @@ function goToLandingSection(sectionId) {
 }
 
 function initLandingPageCMS() {
-    if (document.getElementById('hero_image')) {
-        setupImagePreview('hero_image', 'heroPreview', 'heroPreviewImg', 'heroPreviewName', 'heroUploadZone');
-        setupImagePreview('about_image', 'aboutPreview', 'aboutPreviewImg', 'aboutPreviewName', 'aboutUploadZone');
-        setupImagePreview('dashboard_image', 'dashboardPreview', 'dashboardPreviewImg', 'dashboardPreviewName', 'dashboardUploadZone');
-    }
-
-    var hash = window.location.hash.slice(1);
-    if (hash) {
-        goToLandingSection(hash);
-    }
+    initPanelFeatures('hero');
+    var target = window._landingTarget || window.location.hash.slice(1) || 'hero';
+    delete window._landingTarget;
+    goToLandingSection(target);
 }
 
 function setupImagePreview(inputId, previewBoxId, previewImgId, previewNameId, zoneId) {
@@ -744,6 +725,7 @@ function autoSaveFeature(input) {
     var data = { _method: 'PUT' };
     data[field] = value;
     ajaxAction('/admin/features/' + id, 'POST', data, {
+        silent: true,
         onError: function (res) {
             if (res && res.errors) {
                 var msgs = Object.values(res.errors).flat().join(', ');
@@ -765,9 +747,9 @@ function addFeatureItem() {
                 if (!container) return;
                 var html = '<div class="cms-repeater-item cms-sortable-item" data-id="' + feature.id + '" data-sort="' + feature.sort_order + '">' +
                     '<div class="cms-repeater-row">' +
-                    '<div style="width:130px;flex-shrink:0;"><input type="text" class="form-input" value="' + (feature.icon_name || '') + '" placeholder="icon-name" data-field="icon_name" data-id="' + feature.id + '" onblur="autoSaveFeature(this)"></div>' +
-                    '<div style="flex:1;min-width:120px;"><input type="text" class="form-input" value="' + feature.title + '" placeholder="Nama fitur..." data-field="title" data-id="' + feature.id + '" onblur="autoSaveFeature(this)"></div>' +
-                    '<div style="flex:1.5;min-width:160px;"><input type="text" class="form-input" value="' + feature.description + '" placeholder="Deskripsi..." data-field="description" data-id="' + feature.id + '" onblur="autoSaveFeature(this)"></div>' +
+                    '<div style="width:130px;flex-shrink:0;"><input type="text" class="form-input" value="' + (feature.icon_name || '') + '" placeholder="icon-name" data-field="icon_name" data-id="' + feature.id + '" oninput="this.dataset.dirty=\'1\'" onblur="autoSaveFeature(this)"></div>' +
+                    '<div style="flex:1;min-width:120px;"><input type="text" class="form-input" value="' + feature.title + '" placeholder="Nama fitur..." data-field="title" data-id="' + feature.id + '" oninput="this.dataset.dirty=\'1\'" onblur="autoSaveFeature(this)"></div>' +
+                    '<div style="flex:1.5;min-width:160px;"><input type="text" class="form-input" value="' + feature.description + '" placeholder="Deskripsi..." data-field="description" data-id="' + feature.id + '" oninput="this.dataset.dirty=\'1\'" onblur="autoSaveFeature(this)"></div>' +
                     '<div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">' +
                     '<button type="button" class="btn-icon" onclick="moveFeatureUp(this)">' + iconSvg("arrow-up") + '</button>' +
                     '<button type="button" class="btn-icon" onclick="moveFeatureDown(this)">' + iconSvg("arrow-down") + '</button>' +
@@ -852,22 +834,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ─── Status Dropdown: Close on outside click ─── */
-
-document.addEventListener('click', function (e) {
-    if (!e.target.closest('.status-dropdown') && !e.target.closest('.status-menu')) {
-        document.querySelectorAll('.status-dropdown.open').forEach(function (d) {
-            d.classList.remove('open');
-            var m = document.querySelector('.status-menu[data-dropdown-id="' + d.dataset.id + '"]');
-            if (m) m.classList.remove('open');
-        });
-    }
-});
-
 /* ─── Global Submit: Landing Page Form ─── */
 
 document.addEventListener('submit', function (e) {
     if (e.target && e.target.id === 'landingPageForm') {
         e.preventDefault();
+        document.querySelectorAll('#featuresContainer input[data-dirty="1"]').forEach(function (el) {
+            autoSaveFeature(el);
+            delete el.dataset.dirty;
+        });
         ajaxSubmit(e.target, {
             onSuccess: function () {}
         });
@@ -908,8 +883,8 @@ function updateSidebarActive() {
 
 document.addEventListener('DOMContentLoaded', function () {
     var navProgress = document.getElementById('navProgress');
-    
     var swupEl = document.getElementById('swup');
+    
     if (swupEl && typeof Swup !== 'undefined') {
         window._swup = new Swup({
             containers: ['#swup'],
@@ -917,18 +892,17 @@ document.addEventListener('DOMContentLoaded', function () {
             ignoreVisit: function(url) { return url.includes('/realtime-status'); }
         });
 
-        window._swup.hooks.on('content:replace', function() {
+        window._swup.hooks.on('link:click', function() {
             if (navProgress) {
                 navProgress.style.opacity = '1';
-                navProgress.style.width = '60%';
+                navProgress.style.width = '20%';
             }
+        });
+
+        window._swup.hooks.on('content:replace', function() {
+            if (navProgress) navProgress.style.width = '60%';
             var toastContainer = document.getElementById('toastContainer');
             if (toastContainer) toastContainer.innerHTML = '';
-            document.querySelectorAll('.status-dropdown.open').forEach(function(d) {
-                d.classList.remove('open');
-                var m = document.querySelector('.status-menu[data-dropdown-id="' + d.dataset.id + '"]');
-                if (m) { m.classList.remove('open'); d.appendChild(m); }
-            });
         });
 
         window._swup.hooks.on('page:view', function() {
@@ -945,9 +919,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 clockEl.textContent = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (typeof initLandingPageCMS === 'function') {
+            if (window.location.pathname.indexOf('/admin/landing-page') > -1 && typeof initLandingPageCMS === 'function') {
                 try { initLandingPageCMS(); } catch(e) {}
             }
+            ['flashSuccess', 'flashError'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) setTimeout(function () { dismissAlert(el); }, 4000);
+            });
             if (window.location.pathname.indexOf('/admin/appointments') > -1) {
                 if (typeof window.pollAppointments === 'function') window.pollAppointments();
             }
@@ -965,10 +943,10 @@ document.addEventListener('DOMContentLoaded', function () {
     tick();
     setInterval(tick, 30000);
 
-    var flash = document.getElementById('flashAlert');
-    if (flash) {
-        setTimeout(function () { dismissAlert(flash); }, 4000);
-    }
+    ['flashSuccess', 'flashError'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) setTimeout(function () { dismissAlert(el); }, 4000);
+    });
 
     if (window.location.href.indexOf('admin/landing') > -1) {
         var wrapper = document.querySelector('.adm-nav-dropdown-wrapper');
@@ -987,6 +965,43 @@ document.addEventListener('DOMContentLoaded', function () {
             window._appointmentPollingInterval = setInterval(window.pollAppointments, 15000);
         }
     }
+
+    document.querySelectorAll('.adm-nav a[href^="' + APP_URL + '/admin"], .adm-nav a[href^="/admin"]').forEach(function (a) {
+        var t;
+        a.addEventListener('mouseenter', function () {
+            t = setTimeout(function () {
+                if (!a.dataset.pf) { a.dataset.pf = '1'; fetch(a.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }); }
+            }, 80);
+        });
+        a.addEventListener('mouseleave', function () { clearTimeout(t); });
+    });
+
+    var adminPages = ['/admin/dashboard','/admin/landing-page','/admin/appointments','/admin/users'].filter(function(u){return window.location.pathname!==u});
+    setTimeout(function () {
+        adminPages.forEach(function(u){
+            fetch(u,{headers:{'X-Requested-With':'XMLHttpRequest','Accept':'text/html'}}).then(function(r){
+                if (r.ok) r.text().then(function(h){
+                    if (window._swup && window._swup.cache && typeof window._swup.cache.cacheUrl === 'function') {
+                        window._swup.cache.cacheUrl(u, h);
+                    }
+                });
+            });
+        });
+    }, 2000);
 });
+
+document.addEventListener('click', function (e) {
+    var link = e.target.closest('.adm-nav-item[href], .adm-nav-sub-item[href]');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href || href === '#') return;
+    var cur = window.location.pathname.replace(/\/+$/, '');
+    var lk = href.replace(/^https?:\/\/[^\/]+/, '').replace(/\/+$/, '');
+    if (lk === cur) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}, true);
 
 

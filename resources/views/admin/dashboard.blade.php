@@ -4,22 +4,7 @@
 
 @push('head')
 <style>
-    .stat-anim { animation: statIn .4s cubic-bezier(.4,0,.2,1) both; }
-    .stat-anim:nth-child(1) { animation-delay: .04s; }
-    .stat-anim:nth-child(2) { animation-delay: .10s; }
-    .stat-anim:nth-child(3) { animation-delay: .16s; }
-    .stat-anim:nth-child(4) { animation-delay: .22s; }
-    @keyframes statIn {
-        from { opacity: 0; transform: translateY(14px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
     .card-anim { animation: statIn .4s cubic-bezier(.4,0,.2,1) .28s both; }
-
-    @keyframes blink {
-        0%,100% { opacity: 1; }
-        50%      { opacity: .4; }
-    }
-    .live-dot { animation: blink 2s infinite; }
 </style>
 @endpush
 

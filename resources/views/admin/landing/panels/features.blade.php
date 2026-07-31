@@ -55,17 +55,17 @@
                     <div style="width:130px;flex-shrink:0;">
                         <input type="text" class="form-input" value="{{ $feature->icon_name ?? '' }}"
                             placeholder="icon-name" data-field="icon_name" data-id="{{ $feature->id }}"
-                            onblur="autoSaveFeature(this)">
+                            oninput="this.dataset.dirty='1'" onblur="autoSaveFeature(this)">
                     </div>
                     <div style="flex:1;min-width:120px;">
                         <input type="text" class="form-input" value="{{ $feature->title }}"
                             placeholder="Nama fitur..." data-field="title" data-id="{{ $feature->id }}"
-                            onblur="autoSaveFeature(this)">
+                            oninput="this.dataset.dirty='1'" onblur="autoSaveFeature(this)">
                     </div>
                     <div style="flex:1.5;min-width:160px;">
                         <input type="text" class="form-input" value="{{ $feature->description }}"
                             placeholder="Deskripsi..." data-field="description" data-id="{{ $feature->id }}"
-                            onblur="autoSaveFeature(this)">
+                            oninput="this.dataset.dirty='1'" onblur="autoSaveFeature(this)">
                     </div>
                     <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
                         <button type="button" class="btn-icon" onclick="moveFeatureUp(this)" title="Naik">

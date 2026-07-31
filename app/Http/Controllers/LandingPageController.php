@@ -28,7 +28,7 @@ class LandingPageController extends Controller
             $landing->syncOriginal();
         }
 
-        $features = \App\Models\Feature::orderBy('sort_order')->paginate(10);
+        $features = \App\Models\Feature::orderBy('sort_order')->get();
 
         return view('admin.landingpage', compact('landing', 'features'));
     }
@@ -64,6 +64,10 @@ class LandingPageController extends Controller
     public function update(UpdateLandingPageRequest $request)
     {
         $landing = LandingPage::first();
+
+        if (!$landing) {
+            $landing = LandingPage::create($request->validated());
+        }
 
         $data = [
             'hero_title'            => $request->hero_title,
@@ -104,11 +108,7 @@ class LandingPageController extends Controller
         $data = $this->landingService->processPricingPlans($request, $data);
         $data = $this->landingService->processSocialLinks($request, $data);
 
-        if (!$landing) {
-            LandingPage::create($data);
-        } else {
-            $landing->update($data);
-        }
+        $landing->update($data);
 
         Cache::forget('landing_page_data');
 

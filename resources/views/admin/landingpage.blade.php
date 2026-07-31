@@ -76,9 +76,4 @@
     </div>
 </form>
 
-<form id="delete-feature-form" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-</form>
-
 @endsection

@@ -21,9 +21,10 @@
                             <th>Nama Lengkap</th>
                             <th>Email</th>
                             <th>Terdaftar Sejak</th>
+                            <th style="width:100px;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="users-table">
                         @foreach ($users as $user)
                             <tr>
                                 <td>
@@ -37,6 +38,13 @@
                                 </td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->created_at ? $user->created_at->format('d M Y H:i') : '-' }}</td>
+                                <td>
+                                    @if ($user->is_admin)
+                                        <span style="font-size:12px;color:#22c55e;font-weight:600;">Admin</span>
+                                    @else
+                                        <button type="button" onclick="deleteUser({{ $user->id }}, this, '{{ route('admin.users.destroy', $user) }}')" style="background:rgba(239,68,68,.12);border:none;color:#ef4444;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">Hapus</button>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -62,3 +70,29 @@
     </div>
 
 @endsection
+
+@push('scripts')
+<script>
+function deleteUser(id, btn, url) {
+    if (!confirm('Yakin ingin menghapus pengguna ini?')) return;
+    btn.disabled = true;
+    btn.textContent = '...';
+    ajaxAction(url, 'DELETE', {}, {
+        onSuccess: function (res) {
+            btn.closest('tr').remove();
+            var countEl = document.querySelector('.admin-page-sub');
+            if (countEl) {
+                var m = countEl.textContent.match(/(\d+)/);
+                if (m) countEl.textContent = countEl.textContent.replace(m[1], parseInt(m[1]) - 1);
+            }
+            var tbody = document.querySelector('#users-table');
+            if (tbody && !tbody.querySelector('tr')) location.reload();
+        },
+        onError: function () {
+            btn.disabled = false;
+            btn.textContent = 'Hapus';
+        }
+    });
+}
+</script>
+@endpush

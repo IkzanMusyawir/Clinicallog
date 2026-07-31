@@ -7,6 +7,7 @@ use App\Http\Requests\StoreFeatureRequest;
 use App\Http\Requests\UpdateFeatureRequest;
 use App\Services\FeatureService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class FeatureController extends Controller
 {
@@ -17,13 +18,6 @@ class FeatureController extends Controller
     public function index()
     {
         return redirect()->route('admin.landing.edit');
-    }
-
-    public function create()
-    {
-        return view('admin.features.form', [
-            'totalFeatures' => Feature::count(),
-        ]);
     }
 
     public function store(StoreFeatureRequest $request)
@@ -45,6 +39,8 @@ class FeatureController extends Controller
             'sort_order' => $newPosition,
         ]);
 
+        Cache::forget('home_features');
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -57,35 +53,39 @@ class FeatureController extends Controller
             ->with('success', 'Feature berhasil ditambahkan');
     }
 
-    public function edit($id)
-    {
-        $feature = Feature::findOrFail($id);
-        return view('admin.features.form', [
-            'feature' => $feature,
-            'totalFeatures' => Feature::count(),
-        ]);
-    }
-
     public function update(UpdateFeatureRequest $request, $id)
     {
         $feature = Feature::findOrFail($id);
 
-        [$iconPath, $iconName] = $this->featureService->handleIcon($request, $feature);
+        $data = [];
+        if ($request->has('title')) {
+            $data['title'] = $request->title;
+        }
+        if ($request->has('description')) {
+            $data['description'] = $request->description;
+        }
+        if ($request->has('icon_name')) {
+            $data['icon_name'] = $request->icon_name;
+        }
 
-        $totalFeatures = Feature::count();
-        $newPosition = $this->featureService->getClampedPosition(
-            $request->sort_order ?? $feature->sort_order, $totalFeatures
-        );
+        if ($request->hasFile('icon') || $request->input('delete_icon') == 1) {
+            [$iconPath, $iconName] = $this->featureService->handleIcon($request, $feature);
+            $data['icon'] = $iconPath;
+            $data['icon_name'] = $iconName;
+        }
 
-        $this->featureService->reorder($feature->sort_order, $newPosition, $feature->id);
+        if ($request->has('sort_order')) {
+            $totalFeatures = Feature::count();
+            $newPosition = $this->featureService->getClampedPosition($request->sort_order, $totalFeatures);
+            $this->featureService->reorder($feature->sort_order, $newPosition, $feature->id);
+            $data['sort_order'] = $newPosition;
+        }
 
-        $feature->update([
-            'title' => $request->title ?? '',
-            'description' => $request->description ?? '',
-            'icon' => $iconPath,
-            'icon_name' => $iconName,
-            'sort_order' => $newPosition,
-        ]);
+        if ($data) {
+            $feature->update($data);
+        }
+
+        Cache::forget('home_features');
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -110,6 +110,8 @@ class FeatureController extends Controller
         $feature->delete();
         $this->featureService->compactAfterDelete($deletedPosition);
 
+        Cache::forget('home_features');
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -130,6 +132,7 @@ class FeatureController extends Controller
         foreach ($ids as $index => $id) {
             Feature::where('id', $id)->update(['sort_order' => $index + 1]);
         }
+        Cache::forget('home_features');
         return response()->json(['success' => true]);
     }
 }

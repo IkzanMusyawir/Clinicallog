@@ -81,11 +81,12 @@ class LandingPageService
         if (!$request->has('steps')) return $data;
 
         $steps = [];
-        foreach ($request->input('steps', []) as $i => $s) {
+        $counter = 1;
+        foreach ($request->input('steps', []) as $s) {
             if (!empty($s['title'])) {
                 $steps[] = [
                     'icon'  => $s['icon'] ?? 'clipboard-edit',
-                    'num'   => str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                    'num'   => str_pad($counter++, 2, '0', STR_PAD_LEFT),
                     'title' => $s['title'],
                     'desc'  => $s['desc'] ?? '',
                 ];

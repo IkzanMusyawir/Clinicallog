@@ -34,7 +34,18 @@
     </div>
 
     {{-- Navbar --}}
-    @php $navbarVisible = $landing && isset($landing->navbar_visible) ? $landing->navbar_visible : true; @endphp
+    @php
+        $getAnchorUrl = function($url) {
+            if (is_string($url) && str_starts_with($url, '#')) {
+                if (request()->routeIs('home')) {
+                    return $url;
+                }
+                return url('/') . '/' . $url;
+            }
+            return $url;
+        };
+        $navbarVisible = $landing && isset($landing->navbar_visible) ? $landing->navbar_visible : true;
+    @endphp
     @if($navbarVisible)
     <header class="navbar" id="navbar" role="banner">
         @php
@@ -78,21 +89,11 @@
             }
             $navCtaText = $landing && $landing->navbar_cta_text ? $landing->navbar_cta_text : 'Minta Demo';
             $navCtaUrl = $landing && $landing->navbar_cta_url ? $landing->navbar_cta_url : '#kontak';
-
-            $getAnchorUrl = function($url) {
-                if (is_string($url) && str_starts_with($url, '#')) {
-                    if (request()->routeIs('home')) {
-                        return $url;
-                    }
-                    return url('/') . '/' . $url;
-                }
-                return $url;
-            };
         @endphp
         <div class="navbar-inner">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="navbar-logo">
-                <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="64">
+                <img src="{{ asset('assets/logo.webp') }}" alt="ClinicalLog" height="64">
             </a>
 
             {{-- Desktop nav --}}
@@ -142,9 +143,8 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <img src="{{ asset('assets/logo.png') }}" alt="ClinicalLog" height="64">
-                    <p class="footer-brand-desc">Platform Medical Data &amp; E-Logbook untuk mendukung pendidikan klinis
-                        yang lebih digital, terukur, dan terintegrasi.</p>
+                    <img src="{{ asset('assets/logo.webp') }}" alt="ClinicalLog" height="64">
+                    <p class="footer-brand-desc">{{ $landing->footer_description ?? 'Platform Medical Data & E-Logbook untuk mendukung pendidikan klinis yang lebih digital, terukur, dan terintegrasi.' }}</p>
                 </div>
                 <div>
                     <h3 class="footer-heading">Produk</h3>
@@ -185,18 +185,19 @@
                 <div>
                     <h3 class="footer-heading">Media Sosial</h3>
                     <div class="footer-links">
-                        <a href="#">LinkedIn</a>
-                        <a href="#">Instagram</a>
-                        <a href="#">YouTube</a>
+                        @php $socials = $landing->social_links ?? []; @endphp
+                        @foreach ($socials as $s)
+                            <a href="{{ $s['url'] ?? '#' }}" target="_blank" rel="noopener">{{ ucfirst($s['platform'] ?? '') }}</a>
+                        @endforeach
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p class="footer-copy">© {{ date('Y') }} ClinicalLog. Seluruh Hak Cipta Dilindungi.</p>
                 <div class="footer-socials">
-                    <a href="#" aria-label="LinkedIn">in</a>
-                    <a href="#" aria-label="Instagram">ig</a>
-                    <a href="#" aria-label="YouTube">yt</a>
+                    @foreach ($socials as $s)
+                        <a href="{{ $s['url'] ?? '#' }}" target="_blank" rel="noopener" aria-label="{{ ucfirst($s['platform'] ?? '') }}">{{ strtoupper(substr($s['platform'] ?? '', 0, 2)) }}</a>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -582,7 +583,7 @@
     </style>
 
     {{-- External libraries --}}
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@1.27.0/dist/umd/lucide.min.js"></script>
 
     <script>
         lucide.createIcons();
@@ -824,7 +825,8 @@
             fetch("{{ route('appointments.store') }}", {
                 method: 'POST',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 },
                 body: formData
             })
@@ -856,68 +858,10 @@
         }
     </script>
 
+    <x-cursor-glow selectors="'a, button, .btn-primary, .btn-secondary, .feature-card, .benefit-card, .testi-card, .pricing-card, .step-item, input, textarea, select, [onclick]'"/>
+
     <script>
     (function() {
-        var glow = document.getElementById('cursorGlow');
-        var dot = document.getElementById('cursorDot');
-        if (!glow || !dot) return;
-
-        var mouseX = -100, mouseY = -100;
-        var glowX = -100, glowY = -100;
-        var isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (isTouch) return;
-
-        var interactiveSelectors = 'a, button, .btn-primary, .btn-secondary, .feature-card, .benefit-card, .testi-card, .pricing-card, .step-item, input, textarea, select, [onclick]';
-
-        document.addEventListener('mousemove', function(e) {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            dot.style.left = mouseX + 'px';
-            dot.style.top = mouseY + 'px';
-            if (!dot.classList.contains('active')) {
-                dot.classList.add('active');
-                glow.classList.add('active');
-            }
-        }, { passive: true });
-
-        function animateGlow() {
-            glowX += (mouseX - glowX) * 0.12;
-            glowY += (mouseY - glowY) * 0.12;
-            glow.style.left = glowX + 'px';
-            glow.style.top = glowY + 'px';
-            requestAnimationFrame(animateGlow);
-        }
-        animateGlow();
-
-        document.addEventListener('mouseleave', function() {
-            glow.classList.remove('active');
-            dot.classList.remove('active');
-        });
-        document.addEventListener('mouseenter', function() {
-            glow.classList.add('active');
-            dot.classList.add('active');
-        });
-
-        document.addEventListener('mousedown', function() {
-            dot.classList.add('clicking');
-        });
-        document.addEventListener('mouseup', function() {
-            dot.classList.remove('clicking');
-        });
-
-        document.addEventListener('mouseover', function(e) {
-            if (e.target.closest(interactiveSelectors)) {
-                dot.classList.add('hover-interactive');
-                glow.classList.add('hover-interactive');
-            }
-        }, { passive: true });
-        document.addEventListener('mouseout', function(e) {
-            if (e.target.closest(interactiveSelectors)) {
-                dot.classList.remove('hover-interactive');
-                glow.classList.remove('hover-interactive');
-            }
-        }, { passive: true });
-
         var cards = document.querySelectorAll('.feature-card, .benefit-card, .testi-card, .pricing-card, .step-item');
         cards.forEach(function(card) {
             var glowEl = document.createElement('div');
